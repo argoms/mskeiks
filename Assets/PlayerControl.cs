@@ -5,7 +5,7 @@ public class PlayerControl : Photon.MonoBehaviour
 {
 
   public float speed = 10f;
-  Rigidbody rigidbody;
+  Rigidbody2D rigidbody;
 
   private float lastSynchronizationTime = 0f;
   private float syncDelay = 0f;
@@ -13,27 +13,54 @@ public class PlayerControl : Photon.MonoBehaviour
   private Vector3 syncStartPosition = Vector3.zero;
   private Vector3 syncEndPosition = Vector3.zero;
 
+  private GameObject camera;
+
   void Start()
   {
-    rigidbody = GetComponent<Rigidbody>();
+    rigidbody = GetComponent<Rigidbody2D>();
+    camera = GameObject.Find("Camera");
   }
   void Update()
   {
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
+      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -10); //camera follows player
       InputMovement();
     }
     else
     {
       SyncedMovement();
     }
+
+    //CircleCollider2D circle = GetComponent<CircleCollider2D>();
   }
 
   void InputMovement()
   {
-    
+    Vector2 movement = new Vector2(0,0);
+    if (Input.GetKey(KeyCode.W))
+    {
+      movement.y += 1;
+    }
 
+    if (Input.GetKey(KeyCode.S))
+    {
+      movement.y -= 1;
+    }
+
+    if (Input.GetKey(KeyCode.D))
+    {
+      movement.x += 1;
+    }
+
+    if (Input.GetKey(KeyCode.A))
+    {
+      movement.x -= 1;
+    }
+    movement.Normalize();
+    rigidbody.AddForce(movement * speed * Time.deltaTime) ;
+    /*
     //shitty testing movement
     if (Input.GetKey(KeyCode.W))
       rigidbody.MovePosition(rigidbody.position + Vector3.forward * speed * Time.deltaTime);
@@ -46,13 +73,14 @@ public class PlayerControl : Photon.MonoBehaviour
 
     if (Input.GetKey(KeyCode.A))
       rigidbody.MovePosition(rigidbody.position - Vector3.right * speed * Time.deltaTime);
+      */
   }
 
   void SyncedMovement()
   {
 
     syncTime += Time.deltaTime;
-    rigidbody.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+    rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
   }
   void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
   {
@@ -65,12 +93,14 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       //rigidbody.position = (Vector3)stream.ReceiveNext();
       
-      syncEndPosition = (Vector3)stream.ReceiveNext();
+      syncEndPosition = (Vector2)stream.ReceiveNext();
       syncStartPosition = rigidbody.position;
 
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
       lastSynchronizationTime = Time.time;
+
+      //client side prediction (commented out):
       /*
       Vector3 syncPosition = (Vector3)stream.ReceiveNext();
       Vector3 syncVelocity = (Vector3)stream.ReceiveNext();
@@ -81,6 +111,8 @@ public class PlayerControl : Photon.MonoBehaviour
 
       //syncEndPosition = syncPosition + syncVelocity * syncDelay;
       //syncStartPosition = rigidbody.position;
+
+
     }
   }
 }

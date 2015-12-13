@@ -68,6 +68,6 @@ public class NetworkManager :Photon. MonoBehaviour
   void OnJoinedRoom()
   {
     Debug.Log("Connected to Room");
-    GameObject newPlayer = PhotonNetwork.Instantiate(playerPrefab.name, Vector3.zero, Quaternion.identity, 0);
+    GameObject newPlayer = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(0, 0, -1), Quaternion.identity, 0);
   }
 }
