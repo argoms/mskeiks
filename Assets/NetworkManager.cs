@@ -13,7 +13,7 @@ public class NetworkManager :Photon. MonoBehaviour
 
   void Start()
   {
-    PhotonNetwork.ConnectUsingSettings("v0.0.10");
+    PhotonNetwork.ConnectUsingSettings("v0.0.11");
   }
 
   void Update()

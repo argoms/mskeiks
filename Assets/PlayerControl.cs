@@ -25,7 +25,8 @@ public class PlayerControl : Photon.MonoBehaviour
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
-      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -10); //camera follows player
+
+      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -12); //camera follows player default -12, -30 for more zoom
       InputMovement();
     }
     else
