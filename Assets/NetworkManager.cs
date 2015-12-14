@@ -33,10 +33,11 @@ public class NetworkManager :Photon. MonoBehaviour
       if (GUI.Button(new Rect(100, 100, 250, 100), "Start Server"))
       {
 
+        
         //properties:
         Hashtable customRoomProperties = new Hashtable(); 
         customRoomProperties.Add("map", 1);
-        customRoomProperties.Add("seed", 5);
+        customRoomProperties.Add("seed", Random.Range(0, 256));
         //PhotonNetwork.CreateRoom(roomName, new RoomOptions() { maxPlayers = 2, isOpen = true, isVisible = true }, lobbyName);
 
         RoomOptions options = new RoomOptions();
@@ -44,7 +45,7 @@ public class NetworkManager :Photon. MonoBehaviour
         options.isOpen = true;
         options.isVisible = true;
         options.customRoomProperties = customRoomProperties;
-        PhotonNetwork.CreateRoom(roomName, options, null);
+        PhotonNetwork.CreateRoom("Dungeon" + "|" + customRoomProperties["seed"], options, null);
         
       }
 
