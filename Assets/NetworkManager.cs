@@ -13,7 +13,7 @@ public class NetworkManager :Photon. MonoBehaviour
 
   void Start()
   {
-    PhotonNetwork.ConnectUsingSettings("v0.0.11");
+    PhotonNetwork.ConnectUsingSettings("v0.0.13");
   }
 
   void Update()
@@ -84,10 +84,8 @@ public class NetworkManager :Photon. MonoBehaviour
   void OnJoinedRoom()
   {
     Debug.Log("Connected to Room");
-
-    //player default 1 unit above floor
-    GameObject newPlayer = PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(0, 0, 0), Quaternion.identity, 0);
-
+    
+    
     Instantiate(level, new Vector3(0, 0, 0), Quaternion.identity); //level
   }
 }

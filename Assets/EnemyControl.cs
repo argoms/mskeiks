@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerControl : Photon.MonoBehaviour
+public class EnemyControl : Photon.MonoBehaviour
 {
 
   public float speed = 10f;
@@ -13,24 +13,19 @@ public class PlayerControl : Photon.MonoBehaviour
   private Vector3 syncStartPosition = Vector3.zero;
   private Vector3 syncEndPosition = Vector3.zero;
 
-  private GameObject camera;
-  private bool attacking;
-
-  public bool canMove;
+  public int health = 10;
+  //private GameObject camera;
+  Vector2 movement;
   void Start()
   {
-    canMove = true;
-    attacking = false;
+    movement = Vector2.zero;
     rigidbody = GetComponent<Rigidbody2D>();
-    camera = GameObject.Find("Camera");
   }
   void Update()
   {
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
-
-      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -12); //camera follows player default -12, -30 for more zoom
       InputMovement();
     }
     else
@@ -43,7 +38,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void InputMovement()
   {
-    Vector2 movement = new Vector2(0,0);
+    /*
     if (Input.GetKey(KeyCode.W))
     {
       movement.y += 1;
@@ -64,33 +59,10 @@ public class PlayerControl : Photon.MonoBehaviour
       movement.x -= 1;
     }
     movement.Normalize();
-    if (canMove)
-    {
-      rigidbody.AddForce(movement * speed * Time.deltaTime);
-    }
+    */
+    rigidbody.AddForce(movement * speed * Time.deltaTime);
   }
 
-  void OnMouseDown()
-  {
-    Debug.Log("aa");
-    if (photonView.isMine)
-    {
-      photonView.RPC("Attack", PhotonTargets.All);
-      PhotonNetwork.SendOutgoingCommands();
-    }
-  }
-
-  [PunRPC]
-  void CutsceneEnded()
-  {
-    canMove = true;
-  }
-
-  [PunRPC]
-  void Attack()
-  {
-    this.rigidbody.AddForce(new Vector2(0, 1000));
-  }
   void SyncedMovement()
   {
 
@@ -108,11 +80,10 @@ public class PlayerControl : Photon.MonoBehaviour
     else
     {
       //rigidbody.position = (Vector3)stream.ReceiveNext();
-      
+
       syncEndPosition = (Vector2)stream.ReceiveNext();
       syncStartPosition = rigidbody.position;
 
-      //attacking = (bool)stream.ReceiveNext();
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
       lastSynchronizationTime = Time.time;

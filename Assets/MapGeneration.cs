@@ -110,7 +110,7 @@ public class MapGeneration : Photon.MonoBehaviour
     loadingText.text = "generating map";
     loadState = 0;
 
-
+    
 
 
 
@@ -121,6 +121,8 @@ public class MapGeneration : Photon.MonoBehaviour
   {
     switch (loadState)
     {
+      case 10:
+        break;
       case 0:
         Debug.Log("beginning mapgen");
         GenerateMapArray();
@@ -162,6 +164,7 @@ public class MapGeneration : Photon.MonoBehaviour
       case 9:
         SpawnMap();
         loadingText.text = "load complete";
+        GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity, 0);
         loadState = 10; //done loading
         break;
 
@@ -226,7 +229,7 @@ public class MapGeneration : Photon.MonoBehaviour
     {
       mazeStart.y -= 1;
     }
-    Debug.Log(mazeStart.x + "aa" + mazeStart.y);
+    //Debug.Log(mazeStart.x + "aa" + mazeStart.y);
     //SetTileAt(mazeStart, Tile(2, 1, 1));
     FillArea(mazeStart, Vec2(2, 2), Tile(2, 1, 1), true);
     maze.Add(mazeStart);
@@ -279,7 +282,7 @@ public class MapGeneration : Photon.MonoBehaviour
         }*/
         if (TileAt(Vec2(i, j)).type == 3)
         {
-          Debug.Log(TileAt(Vec2(i, j)).subtype);
+          //Debug.Log(TileAt(Vec2(i, j)).subtype);
           if ((bool)rooms[TileAt(Vec2(i, j)).subtype])
           {
 
