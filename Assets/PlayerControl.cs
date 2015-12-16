@@ -19,7 +19,8 @@ public class PlayerControl : Photon.MonoBehaviour
 
   public bool canMove;
 
-  private Quaternion rotation;
+  private Quaternion rotationEnd;
+  private Quaternion rotationStart;
   void Start()
   {
     canMove = true;
@@ -38,7 +39,12 @@ public class PlayerControl : Photon.MonoBehaviour
 
       camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -12); //camera follows player default -12, -30 for more zoom
       InputMovement();
-
+      if (Input.GetMouseButtonDown(0))
+      {
+        photonView.RPC("Attack", PhotonTargets.All);
+        PhotonNetwork.SendOutgoingCommands();
+        //Attack();
+      }
       
     }
     else
@@ -55,7 +61,7 @@ public class PlayerControl : Photon.MonoBehaviour
     mousePos.z = 12;
     mousePos = Camera.main.ScreenToWorldPoint(mousePos);
     transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
-    Debug.Log(Input.mousePosition);
+    
 
     Vector2 movement = new Vector2(0,0);
     if (Input.GetKey(KeyCode.W))
@@ -86,7 +92,6 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void OnMouseDown()
   {
-    Debug.Log("aa");
     if (photonView.isMine)
     {
       photonView.RPC("Attack", PhotonTargets.All);
@@ -103,15 +108,27 @@ public class PlayerControl : Photon.MonoBehaviour
   [PunRPC]
   void Attack()
   {
-    this.rigidbody.AddForce(new Vector2(0, 1000));
+    //animation code goes here
+
+    //create tracer:
+    Debug.Log(transform.forward);
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
+    tracer.transform.parent = transform;
+    /*
+    if (PhotonNetwork.isMasterClient)
+    {
+
+    }*/
+    //this.rigidbody.AddForce(new Vector2(0, 1000));
   }
   void SyncedMovement()
   {
 
     syncTime += Time.deltaTime;
     rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
-    transform.rotation = rotation;
-    
+    if (!photonView.isMine)
+      transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
+
   }
 
   void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -120,6 +137,10 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       stream.SendNext(rigidbody.position);
       stream.SendNext(transform.rotation);
+      /*if (!photonView.isMine)
+      {
+        stream.SendNext(transform.rotation);
+      }*/
       //stream.SendNext(rigidbody.velocity);
     }
     else
@@ -128,7 +149,12 @@ public class PlayerControl : Photon.MonoBehaviour
       
       syncEndPosition = (Vector2)stream.ReceiveNext();
       syncStartPosition = rigidbody.position;
-      rotation = (Quaternion)stream.ReceiveNext();
+      rotationEnd = (Quaternion)stream.ReceiveNext();
+      /*if (!photonView.isMine)
+      {
+        rotationEnd = (Quaternion)stream.ReceiveNext();
+        rotationStart = transform.rotation;
+      }*/
       //attacking = (bool)stream.ReceiveNext();
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;

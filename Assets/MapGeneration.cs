@@ -408,24 +408,29 @@ public class MapGeneration : Photon.MonoBehaviour
     {
       for (j = 0; j < mapHeight; j++)
       {
+        GameObject tile = this.gameObject;
         //actual stuff goes here
         switch (mapArray[i, j].type)
         {
           case 1:
-            SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile"), 0);
+            tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile"), 0);
             break;
           case 2:
             //case 0: //debug fallthrough
-            SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 0);
+            tile =  SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 0);
             break;
           case -1:
           case 3: //debug fallthroguh
-            SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
+            //SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
             break;
             /*
             case 0:
               Debug.Log("null test");
               break;*/
+        }
+        if (tile != this.gameObject)
+        {
+          tile.transform.parent = transform;
         }
         //actual stuff stops here
       }
@@ -433,11 +438,11 @@ public class MapGeneration : Photon.MonoBehaviour
   }
 
 
-  void SpawnObjectAtPosition(Point location, Object thing, float height)
+  GameObject SpawnObjectAtPosition(Point location, Object thing, float height)
   {
     //note that location is doubled in magnitude because tiles are 2x2 and not 1x1
     Vector3 worldPosition = new Vector3(location.x * 2, location.y * 2, height);
-    Instantiate(thing, worldPosition, Quaternion.identity);
+    return (GameObject)Instantiate(thing, worldPosition, Quaternion.identity);
   }
 
   bool FillRandomRoom(Point sizeMin, Point sizeMax, int tileMeta) //tilemeta sets subtype of tile object
