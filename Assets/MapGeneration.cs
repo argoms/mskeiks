@@ -255,7 +255,7 @@ public class MapGeneration : Photon.MonoBehaviour
     }
   }
 
-  void RoomDoorsGen()
+  void RoomDoorsGen() //also randomly throws enemy spawn locations at the map at the moment
   {
     //index vars:
     int i, j;
@@ -280,29 +280,38 @@ public class MapGeneration : Photon.MonoBehaviour
             SetTileAt(Vec2(i, j), Tile(3, 0, 0));
           }
         }*/
-        if (TileAt(Vec2(i, j)).type == 3)
+        switch (TileAt(Vec2(i, j)).type)
         {
-          //Debug.Log(TileAt(Vec2(i, j)).subtype);
-          if ((bool)rooms[TileAt(Vec2(i, j)).subtype])
-          {
+          case 3:
+            //Debug.Log(TileAt(Vec2(i, j)).subtype);
+            if ((bool)rooms[TileAt(Vec2(i, j)).subtype])
+            {
 
-            //SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
-          }
-          else
-          {
-            if (((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
-               && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
-               || ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
-               && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2)))
+                //SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
+              }
+              else
+              {
+                if (((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
+                    && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
+                    || ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
+                    && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2)))
+                {
+                  rooms[TileAt(Vec2(i, j)).subtype] = true;
+                  //SetTileAt(Vec2(i, j), Tile(3, 0, 0));
+                }
+                else
+                {
+                  SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
+                }
+              }
+              break;
+
+          case -1:
+            if (Random.Range(0, 10) == 5)
             {
-              rooms[TileAt(Vec2(i, j)).subtype] = true;
-              //SetTileAt(Vec2(i, j), Tile(3, 0, 0));
+              SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
             }
-            else
-            {
-              SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
-            }
-          }
+            break;
         }
         //actual stuff stops here
       }
@@ -420,6 +429,14 @@ public class MapGeneration : Photon.MonoBehaviour
             tile =  SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 0);
             break;
           case -1:
+            if (mapArray[i, j].subtype == -2)
+            {
+              if (isFirst)
+              {
+                GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
+              }
+            }
+            break;
           case 3: //debug fallthroguh
             //SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
             break;
@@ -473,14 +490,13 @@ public class MapGeneration : Photon.MonoBehaviour
     }
   }
 
-  /*
-    Generates a room attached to the existing room
-  */
+
   void GenerateAdjacentRoom(ref Room inputRoom)
   {
 
   }
   /*
+
     create functions ar emeant to take existing structures as input, generates will spawn and return them
     createdoors specifices number of doors to generate along the edges of the room
     also modifies original room
@@ -573,6 +589,8 @@ public class MapGeneration : Photon.MonoBehaviour
       }
     }
   }
+
+
   /*
   FillArea
     Fills given rectangular area with given map object
