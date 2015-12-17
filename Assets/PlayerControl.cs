@@ -21,20 +21,27 @@ public class PlayerControl : Photon.MonoBehaviour
 
   private Quaternion rotationEnd;
   private Quaternion rotationStart;
+  private TextMesh healthText;
+  public int health = 10;
+
   void Start()
   {
     FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
+    
 
     canMove = true;
     attacking = false;
     rigidbody = GetComponent<Rigidbody2D>();
     transform = GetComponent<Transform>();
     camera = GameObject.Find("Camera");
+
+    healthText = transform.Find("HealthDisplay").gameObject.GetComponent<TextMesh>();
   }
+
   void Update()
   {
-    
 
+    UpdateHUD();
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
@@ -53,8 +60,11 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       SyncedMovement();
     }
+  }
 
-    //CircleCollider2D circle = GetComponent<CircleCollider2D>();
+  void UpdateHUD()
+  {
+    healthText.text = "" + health;
   }
 
   void InputMovement()
@@ -108,6 +118,21 @@ public class PlayerControl : Photon.MonoBehaviour
   }
 
   [PunRPC]
+  public void Hit(int damage) //called when entity is hit by an attack
+  {
+    //animation code goes here
+
+    if (photonView.isMine)
+    {
+      health -= damage;
+      if (health < 1)
+      {
+        PhotonNetwork.Destroy(this.gameObject);
+      }
+    }
+  }
+
+  [PunRPC]
   void Attack()
   {
     //animation code goes here
@@ -138,6 +163,7 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       stream.SendNext(rigidbody.position);
       stream.SendNext(transform.rotation);
+      stream.SendNext(health);
       /*if (!photonView.isMine)
       {
         stream.SendNext(transform.rotation);
@@ -151,6 +177,7 @@ public class PlayerControl : Photon.MonoBehaviour
       syncEndPosition = (Vector2)stream.ReceiveNext();
       syncStartPosition = rigidbody.position;
       rotationEnd = (Quaternion)stream.ReceiveNext();
+      health = (int)stream.ReceiveNext();
       /*if (!photonView.isMine)
       {
         rotationEnd = (Quaternion)stream.ReceiveNext();

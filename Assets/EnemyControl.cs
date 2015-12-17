@@ -17,6 +17,7 @@ public class EnemyControl : Photon.MonoBehaviour
   //private GameObject camera;
   public Vector2 movement;
 
+  private TextMesh healthText;
   private Quaternion rotationEnd;
   private Quaternion rotationStart;
   public GameObject level;
@@ -25,10 +26,12 @@ public class EnemyControl : Photon.MonoBehaviour
     level = FindObjectOfType<MapGeneration>().gameObject;
     movement = Vector2.up;
     rigidbody = GetComponent<Rigidbody2D>();
+    healthText = transform.Find("HealthDisplay").gameObject.GetComponent<TextMesh>();
   }
   void Update()
   {
     //Debug.Log(PhotonNetwork.GetPing());
+    healthText.text = ""+health;
     if (photonView.isMine)
     {
       InputMovement();
@@ -57,16 +60,33 @@ public class EnemyControl : Photon.MonoBehaviour
   }
 
   [PunRPC]
-  void Attack()
+  void Attack(Vector3 direction, float attackLifetime)
   {
-    rigidbody.AddForce((transform.rotation * Vector3.up * 10));
+    //Debug.Log("lol");
+    
     //animation code goes here
 
     //create tracer:
-    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * direction), Quaternion.LookRotation(Vector3.forward, direction));
     tracer.transform.parent = transform;
+    tracer.GetComponent<AttackTracerBehavior>().lifetime = attackLifetime;
     tracer.GetComponent<AttackTracerBehavior>().friendly = false;
   }
+
+  public void Hit(int damage) //called when entity is hit by an attack
+  {
+    //animation code goes here
+
+    if (photonView.isMine)
+    {
+      health -= damage;
+      if (health < 1)
+      {
+        PhotonNetwork.Destroy(this.gameObject);
+      }
+    }
+  }
+
 
   void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
   {
@@ -74,6 +94,7 @@ public class EnemyControl : Photon.MonoBehaviour
     {
       stream.SendNext(rigidbody.position);
       stream.SendNext(transform.rotation);
+      stream.SendNext(health);
       //stream.SendNext(rigidbody.velocity);
     }
     else
@@ -84,6 +105,7 @@ public class EnemyControl : Photon.MonoBehaviour
       syncStartPosition = rigidbody.position;
 
       rotationEnd = (Quaternion)stream.ReceiveNext();
+      health = (int)stream.ReceiveNext();
 
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;

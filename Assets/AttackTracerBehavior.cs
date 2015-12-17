@@ -4,6 +4,7 @@ using System.Collections;
 public class AttackTracerBehavior : MonoBehaviour {
 
   public bool friendly = true;
+  public float lifetime = 0.25f;
   // Use this for initialization
   void Start () {
     StartCoroutine(DieAfterTime());
@@ -17,7 +18,7 @@ public class AttackTracerBehavior : MonoBehaviour {
 
   IEnumerator DieAfterTime()
   {
-    yield return new WaitForSeconds(0.25f);
+    yield return new WaitForSeconds(lifetime);
     Destroy(this.gameObject);
     //PhotonNetwork.Destroy(this.gameObject);
   }
@@ -25,12 +26,20 @@ public class AttackTracerBehavior : MonoBehaviour {
 
   void OnTriggerEnter2D(Collider2D coll)
   {
-    if (coll.gameObject.layer == 11)
+    if (coll.gameObject.layer == 11) //enemy entity layer num
     {
       if (PhotonNetwork.isMasterClient)
       {
-        PhotonNetwork.Instantiate("DamageText", this.transform.position, Quaternion.identity, 0);
-        PhotonNetwork.Destroy(coll.gameObject);
+        PhotonNetwork.Instantiate("DamageText", coll.gameObject.transform.position, Quaternion.identity, 0);
+        coll.GetComponent<EnemyControl>().Hit(1);
+      }
+    }
+    if (coll.gameObject.layer == 9) //friendly entity layer num
+    {
+      if (PhotonNetwork.isMasterClient)
+      {
+        PhotonNetwork.Instantiate("DamageText", coll.gameObject.transform.position, Quaternion.identity, 0);
+        coll.GetComponent<PlayerControl>().photonView.RPC("Hit", PhotonTargets.All, 1);
       }
     }
   }
