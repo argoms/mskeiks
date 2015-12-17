@@ -13,7 +13,7 @@ public class NetworkManager :Photon. MonoBehaviour
 
   void Start()
   {
-    PhotonNetwork.ConnectUsingSettings("v0.0.17");
+    PhotonNetwork.ConnectUsingSettings("v0.0.18");
   }
 
   void Update()
@@ -46,7 +46,7 @@ public class NetworkManager :Photon. MonoBehaviour
         options.isVisible = true;
         options.customRoomProperties = customRoomProperties;
         PhotonNetwork.CreateRoom("Dungeon" + "|" + customRoomProperties["seed"], options, null);
-        
+        //PhotonNetwork.room.customProperties.Add("plist", new ArrayList());
       }
 
       // Join Room

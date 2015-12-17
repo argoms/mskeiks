@@ -23,6 +23,8 @@ public class PlayerControl : Photon.MonoBehaviour
   private Quaternion rotationStart;
   void Start()
   {
+    FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
+
     canMove = true;
     attacking = false;
     rigidbody = GetComponent<Rigidbody2D>();

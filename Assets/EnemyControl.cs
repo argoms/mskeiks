@@ -22,6 +22,7 @@ public class EnemyControl : Photon.MonoBehaviour
   public GameObject level;
   void Start()
   {
+    level = FindObjectOfType<MapGeneration>().gameObject;
     movement = Vector2.up;
     rigidbody = GetComponent<Rigidbody2D>();
   }

@@ -165,7 +165,10 @@ public class MapGeneration : Photon.MonoBehaviour
         SpawnMap();
         loadingText.text = "load complete";
         GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity, 0);
-        this.GetComponent<LevelManager>().playerList.Add(newPlayer);
+        //PhotonNetwork.room.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { "plist", (ArrayList)(PhotonNetwork.room.customProperties["plist"]).Add(1) } });
+        //PlayerScore.SetPlayerScore.SetCustomProperties( new ExitGames.Client.Photon.Hashtable(){ { "Deaths", (int)PlayerScore.customProperties["Deaths"]+1 } } )
+        //this.GetComponent<LevelManager>().playerList.Add(newPlayer);
+        this.GetComponent<LevelManager>().UpdateList(); // photonView.RPC("AddPlayer", PhotonTargets.All, newPlayer);
         loadState = 10; //done loading
         break;
 
@@ -220,6 +223,7 @@ public class MapGeneration : Photon.MonoBehaviour
     CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);
     rooms.Add(0, false);
 
+    
 
     maze = new ArrayList();
     Point mazeStart = startingRoom.exit + ((Point)startingRoom.doorDirections[0]);
@@ -276,23 +280,27 @@ public class MapGeneration : Photon.MonoBehaviour
             {
 
                 //SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
+            }
+            else
+            {
+              if (((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
+                  && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
+                  || ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
+                  && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2)))
+              {
+                rooms[TileAt(Vec2(i, j)).subtype] = true;
+                //SetTileAt(Vec2(i, j), Tile(3, 0, 0));
               }
               else
               {
-                if (((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
-                    && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
-                    || ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
-                    && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2)))
-                {
-                  rooms[TileAt(Vec2(i, j)).subtype] = true;
-                  //SetTileAt(Vec2(i, j), Tile(3, 0, 0));
-                }
-                else
-                {
-                  SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
-                }
+                SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
               }
-              break;
+            }
+            if (CheckOrthogonal(Vec2(i, j), 1) > 2)
+            {
+              SetTileAt(Vec2(i, j), Tile(1, 1, 0));
+            }
+            break;
 
           case -1:
             if (Random.Range(0, 10) == 5)
@@ -445,12 +453,17 @@ public class MapGeneration : Photon.MonoBehaviour
         {
           tile.transform.parent = transform;
         }
+
+
         //actual stuff stops here
       }
     }
 
-    GameObject aewEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 2, 0), Quaternion.identity, 0);
-    aewEnemy.GetComponent<EnemyControl>().level = this.gameObject;
+    if (isFirst)
+    {
+      GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 3, 0), Quaternion.identity, 0);
+      newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
+    }
   }
 
 

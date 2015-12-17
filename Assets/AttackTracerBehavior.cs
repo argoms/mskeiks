@@ -25,7 +25,6 @@ public class AttackTracerBehavior : MonoBehaviour {
 
   void OnTriggerEnter2D(Collider2D coll)
   {
-    Debug.Log(coll.gameObject.tag);
     if (coll.gameObject.layer == 11)
     {
       if (PhotonNetwork.isMasterClient)
