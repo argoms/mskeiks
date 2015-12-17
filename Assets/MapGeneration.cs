@@ -165,6 +165,7 @@ public class MapGeneration : Photon.MonoBehaviour
         SpawnMap();
         loadingText.text = "load complete";
         GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity, 0);
+        this.GetComponent<LevelManager>().playerList.Add(newPlayer);
         loadState = 10; //done loading
         break;
 
@@ -219,6 +220,7 @@ public class MapGeneration : Photon.MonoBehaviour
     CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);
     rooms.Add(0, false);
 
+
     maze = new ArrayList();
     Point mazeStart = startingRoom.exit + ((Point)startingRoom.doorDirections[0]);
     if (((Point)startingRoom.doorDirections[0]).x == -1)
@@ -266,20 +268,6 @@ public class MapGeneration : Photon.MonoBehaviour
     {
       for (j = 0; j < mapHeight; j++)
       {
-        //actual stuff goes here
-        /*if (TileAt(Vec2(i, j)).type == 1) //generate doors if adjacent tiles
-        {
-          if ((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
-            && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
-          {
-            SetTileAt(Vec2(i, j), Tile(3, 0, 0));
-
-          } else if ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
-            && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2))
-          {
-            SetTileAt(Vec2(i, j), Tile(3, 0, 0));
-          }
-        }*/
         switch (TileAt(Vec2(i, j)).type)
         {
           case 3:
@@ -309,7 +297,14 @@ public class MapGeneration : Photon.MonoBehaviour
           case -1:
             if (Random.Range(0, 10) == 5)
             {
-              SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
+              //SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
+            }
+            break;
+
+          case 2:
+            if (Random.Range(0, 15) == 5)
+            {
+              //SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
             }
             break;
         }
@@ -434,6 +429,7 @@ public class MapGeneration : Photon.MonoBehaviour
               if (isFirst)
               {
                 GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
+                newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
               }
             }
             break;
@@ -452,6 +448,9 @@ public class MapGeneration : Photon.MonoBehaviour
         //actual stuff stops here
       }
     }
+
+    GameObject aewEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 2, 0), Quaternion.identity, 0);
+    aewEnemy.GetComponent<EnemyControl>().level = this.gameObject;
   }
 
 

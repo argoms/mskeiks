@@ -111,7 +111,6 @@ public class PlayerControl : Photon.MonoBehaviour
     //animation code goes here
 
     //create tracer:
-    Debug.Log(transform.forward);
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
     tracer.transform.parent = transform;
     /*
@@ -126,8 +125,8 @@ public class PlayerControl : Photon.MonoBehaviour
 
     syncTime += Time.deltaTime;
     rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
-    if (!photonView.isMine)
-      transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
+    
+    transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
 
   }
 

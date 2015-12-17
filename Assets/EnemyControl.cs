@@ -15,10 +15,14 @@ public class EnemyControl : Photon.MonoBehaviour
 
   public int health = 10;
   //private GameObject camera;
-  Vector2 movement;
+  public Vector2 movement;
+
+  private Quaternion rotationEnd;
+  private Quaternion rotationStart;
+  public GameObject level;
   void Start()
   {
-    movement = Vector2.zero;
+    movement = Vector2.up;
     rigidbody = GetComponent<Rigidbody2D>();
   }
   void Update()
@@ -38,29 +42,9 @@ public class EnemyControl : Photon.MonoBehaviour
 
   void InputMovement()
   {
-    /*
-    if (Input.GetKey(KeyCode.W))
-    {
-      movement.y += 1;
-    }
 
-    if (Input.GetKey(KeyCode.S))
-    {
-      movement.y -= 1;
-    }
-
-    if (Input.GetKey(KeyCode.D))
-    {
-      movement.x += 1;
-    }
-
-    if (Input.GetKey(KeyCode.A))
-    {
-      movement.x -= 1;
-    }
-    movement.Normalize();
-    */
     rigidbody.AddForce(movement * speed * Time.deltaTime);
+    //Debug.Log(rigidbody.velocity);
   }
 
   void SyncedMovement()
@@ -68,6 +52,19 @@ public class EnemyControl : Photon.MonoBehaviour
 
     syncTime += Time.deltaTime;
     rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
+    transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
+  }
+
+  [PunRPC]
+  void Attack()
+  {
+    rigidbody.AddForce((transform.rotation * Vector3.up * 10));
+    //animation code goes here
+
+    //create tracer:
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
+    tracer.transform.parent = transform;
+    tracer.GetComponent<AttackTracerBehavior>().friendly = false;
   }
 
   void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -75,6 +72,7 @@ public class EnemyControl : Photon.MonoBehaviour
     if (stream.isWriting)
     {
       stream.SendNext(rigidbody.position);
+      stream.SendNext(transform.rotation);
       //stream.SendNext(rigidbody.velocity);
     }
     else
@@ -83,6 +81,8 @@ public class EnemyControl : Photon.MonoBehaviour
 
       syncEndPosition = (Vector2)stream.ReceiveNext();
       syncStartPosition = rigidbody.position;
+
+      rotationEnd = (Quaternion)stream.ReceiveNext();
 
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
