@@ -270,6 +270,8 @@ public class MapGeneration : Photon.MonoBehaviour
     newRoom.doors.Add(Vec2(newRoom.size.x / 2, newRoom.size.y - 1)); //door going up;
     newRoom.doorDirections.Add(Vec2(0, 1));
 
+    
+
     newRoom.roomType = type;
     return newRoom;
   }
@@ -308,6 +310,7 @@ public class MapGeneration : Photon.MonoBehaviour
 
       case "RegularRoom":
         FillBorders(location, newRoom.size, Tile(1, 0, 0), false, true, newRoom.roomNumber);
+        SetTileAt(location + (newRoom.size / 2), Tile(-1, -2, 0)); 
         break;
     }
 
@@ -429,8 +432,8 @@ public class MapGeneration : Photon.MonoBehaviour
 
     if (isFirst)
     {
-      GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 13, 0), Quaternion.identity, 0);
-      newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
+      //GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 13, 0), Quaternion.identity, 0);
+      //newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
     }
   }
 

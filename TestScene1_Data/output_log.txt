@@ -6,50 +6,21 @@ Direct3D:
     Vendor:   NVIDIA
     VRAM:     3072 MB
 Begin MonoManager ReloadAssembly
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Photon3Unity3D.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
-- Completed reload, in  0.196 seconds
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: C:\NotDigiPen\mskeiks\mskeiks\Unity_MSKEIKS\TestScene1_Data\Managed\System.dll (this message is harmless)
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
+- Completed reload, in  0.045 seconds
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\System.dll (this message is harmless)
 desktop: 1920x1080 120Hz; virtual: 1920x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
-<RI> Initialized touch support.
-UnloadTime: 0.494857 ms
-Setting up 2 worker threads for Enlighten.
-  Thread -> id: 77b0 -> priority: 1 
-  Thread -> id: 57f4 -> priority: 1 
-Joined Lobby
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Room was created
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Connected to Room
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-NullReferenceException: Object reference not set to an instance of an object
-  at NetworkManager.OnJoinedRoom () [0x00000] in <filename unknown>:0 
-UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
-NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[])
-NetworkingPeer:OnEvent(EventData)
-ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
-ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
-ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
-PhotonHandler:Update()
- 
-(Filename:  Line: -1)
-
