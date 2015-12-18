@@ -66,34 +66,51 @@ public class MapGeneration : Photon.MonoBehaviour
     {
       return new Point(input.x / scalar, input.y / scalar);
     }
+
+    public static bool operator ==(Point point1, Point point2) //equality check
+    {
+      return (point1.x == point2.x) && (point1.y == point2.y) ;
+    }
+
+    public static bool operator !=(Point point1, Point point2) //not equals check
+    {
+      return !((point1.x == point2.x) && (point1.y == point2.y));
+    }
+
     public int x;
     public int y;
   };
 
   struct Room
   {
-    public Room(Point _entrance, Point _exit, Point _location, Point _size)
+    public Room(Point _entrance, Point _exit, Point _location, Point _size, string _roomType, int _roomNumber)
     {
       entrance = _entrance;
       exit = _exit;
       location = _location;
       size = _size;
       doorDirections = new ArrayList();
-      //doors = new ArrayList();
+      doors = new ArrayList();
+      roomType = _roomType;
+      roomNumber = _roomNumber;
       //doors.Add(entrance);
       //doors.Add(exit);
     }
+
     //ArrayList doors;
     public Point entrance;
     public Point exit;
     public Point location;
     public Point size;
     public ArrayList doorDirections;
+    public ArrayList doors;
+    public string roomType;
+    public int roomNumber;
   };
 
+  int mapLength = 0;
   MapObject[,] mapArray;
   private TextMesh loadingText;
-  private ArrayList maze;
   private int counter;
   private Hashtable rooms;
 
@@ -127,11 +144,9 @@ public class MapGeneration : Photon.MonoBehaviour
         Debug.Log("beginning mapgen");
         GenerateMapArray();
 
-        loadState = 1;
-        counter = 0;
-
+        loadState = 5;
         break;
-      case 1:
+      /*case 1:
         counter += MazeGen(ref maze);
         if (counter > 64)
         {
@@ -153,7 +168,7 @@ public class MapGeneration : Photon.MonoBehaviour
       case 4:
         RoomDoorsGen();
         loadState = 5;
-        break;
+        break;*/
       case 5:
         GenerateEdges();
         loadState = 6;
@@ -203,10 +218,11 @@ public class MapGeneration : Photon.MonoBehaviour
       }
     }
   }
+
   //map gen:
   void GenerateMapArray() //creates map array
   {
-
+  
     mapArray = new MapObject[mapHeight, mapWidth];
     Random.seed = seed;
     //fill in map edge
@@ -219,196 +235,128 @@ public class MapGeneration : Photon.MonoBehaviour
     FillBorders(Vec2(5, 5), mapSize - Vec2(10, 10), Tile(1, 2, 1), false, false, -1);
 
     //make starting 5x5 room:
+    /*
     Room startingRoom = new Room(Vec2(mapWidth / 2 - 3, 10), Vec2(-1, 0), Vec2(mapWidth / 2 - 3, 10), Vec2(7, 7));
-    CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);
-    rooms.Add(0, false);
+    CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);*/
+    Room startingRoom = CreateStartRoom(7, "StartRoom");
+    startingRoom.roomNumber = 1;
+    DrawRoom(startingRoom, Vec2(mapWidth / 2 - 3, 10));
+
+    int i = 0;
+    while (i++ < 5)
+    {
+      DrawNextRoom(mapLength - 1);
+    }
+  }
+
+  Room CreateSquareRoom(int size, string type)
+  {
+    Room newRoom = new Room();
+    newRoom.doorDirections = new ArrayList();
+    newRoom.doors = new ArrayList();
+
+    newRoom.location = Vec2(-1, 0);
+    newRoom.size = Vec2(size, size);
+
+    newRoom.doors.Add(Vec2(0, newRoom.size.y / 2)); //door going left
+    newRoom.doorDirections.Add(Vec2(-1, 0));
+
+    newRoom.doors.Add(Vec2(newRoom.size.x - 1, newRoom.size.y / 2)); //door going right
+    newRoom.doorDirections.Add(Vec2(1, 0));
+
+    newRoom.doors.Add(Vec2(newRoom.size.x / 2, 0)); //door going down
+    newRoom.doorDirections.Add(Vec2(0, -1));
+
+    newRoom.doors.Add(Vec2(newRoom.size.x / 2, newRoom.size.y - 1)); //door going up;
+    newRoom.doorDirections.Add(Vec2(0, 1));
+
+    newRoom.roomType = type;
+    return newRoom;
+  }
+
+  Room CreateStartRoom(int size, string type)
+  {
+    Room newRoom = new Room();
+    newRoom.doorDirections = new ArrayList();
+    newRoom.doors = new ArrayList();
+
+    newRoom.location = Vec2(-1, 0);
+    newRoom.size = Vec2(size, size);
+
+    newRoom.doors.Add(Vec2(0, newRoom.size.y / 2)); //door going left
+    newRoom.doorDirections.Add(Vec2(-1, 0));
+
+    newRoom.doors.Add(Vec2(newRoom.size.x - 1, newRoom.size.y / 2)); //door going right
+    newRoom.doorDirections.Add(Vec2(1, 0));
+
+    newRoom.doors.Add(Vec2(newRoom.size.x / 2, newRoom.size.y - 1)); //door going up;
+    newRoom.doorDirections.Add(Vec2(0, 1));
+
+    newRoom.roomType = type;
+    return newRoom;
+  }
+
+  void DrawRoom(Room newRoom, Point location)
+  {
+    
+    newRoom.location = location;
+    switch (newRoom.roomType)
+    {
+      case "StartRoom":
+        FillBorders(location, newRoom.size, Tile(1, 0, 0), true, true, 1); //starting room's special meta value is 1 because fuck starting at zero right?
+        break; //seriously though the default value is 0 so that's why it's 1 here
+
+      case "RegularRoom":
+        FillBorders(location, newRoom.size, Tile(1, 0, 0), true, true, newRoom.roomNumber);
+        break;
+    }
+
+    rooms.Add(mapLength, newRoom);
+    mapLength++;
+  }
+
+  void DrawNextRoom(int index) //draw a room attached to the index room
+  {
+    Room nextRoom = CreateSquareRoom(5, "RegularRoom");
+    Room currentRoom = (Room)rooms[index];
+    bool done = false; //used to repeatedly try things
+
+    int randomDoor = 0;
+    Point randomDoorDirection;
+    int originalDoor = -1;
+
+    while (!done) //find a connection
+    {
+      randomDoor = Random.Range(0, (currentRoom.doors.Count)); //pick a random door index
+      randomDoorDirection = (Point)currentRoom.doorDirections[randomDoor]; //get direction of that index
+      originalDoor = -1; //index of the door on the original room to join to
+
+      for (int i = 0; i < nextRoom.doors.Count; i++)
+      {
+        //find a door on the original room in the opposite direction of the randomly chosen door on the new room:
+        if ((Point)nextRoom.doorDirections[i] == (randomDoorDirection * -1)) 
+        {
+          originalDoor = i;
+        }
+      }
+
+      if (originalDoor != -1)
+      {
+        done = true; //stop seraching once a connection is found
+      }
+    }
 
     
+    Point newRoomLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor] + (Point)currentRoom.doorDirections[originalDoor] - (Point)nextRoom.doors[randomDoor];
+    DrawRoom(nextRoom, newRoomLocation);
 
-    maze = new ArrayList();
-    Point mazeStart = startingRoom.exit + ((Point)startingRoom.doorDirections[0]);
-    if (((Point)startingRoom.doorDirections[0]).x == -1)
-    {
-      mazeStart.x -= 1;
-    }
-    if (((Point)startingRoom.doorDirections[0]).y == -1)
-    {
-      mazeStart.y -= 1;
-    }
-    //Debug.Log(mazeStart.x + "aa" + mazeStart.y);
-    //SetTileAt(mazeStart, Tile(2, 1, 1));
-    FillArea(mazeStart, Vec2(2, 2), Tile(2, 1, 1), true);
-    maze.Add(mazeStart);
-    //maze.Capacity = 100;
+    Point doorLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor];
+    SetTileAt(doorLocation, Tile(4, 0, 0));
+    SetTileAt(doorLocation + (Point)currentRoom.doorDirections[originalDoor], Tile(4, 0, 0));
+    //if(CheckAreaFor(currentRoom.location + (Point)currentRoom.doors[originalDoor]
 
-    //FillBorders(Vec2(mapWidth/2 - 3, 10), Vec2(7, 7), Tile(1, -1, 1), false, true);
-
-    //make a bunch of other rooms:
-    int i = 0; //index
-    int j = 0; //index
-
-
-    i = 0;
   }
 
-  void RandomRoomsGen(int number)
-  {
-    int i = 1;
-    while (i < number + 1)
-    {
-      if (FillRandomRoom(Vec2(6, 6), Vec2(12, 12), i))
-        i++;
-    }
-  }
-
-  void RoomDoorsGen() //also randomly throws enemy spawn locations at the map at the moment
-  {
-    //index vars:
-    int i, j;
-
-    Point startingPoint = Vec2(-mapWidth / 2, -12);
-
-    for (i = 0; i < mapWidth; i++) //looping through every item
-    {
-      for (j = 0; j < mapHeight; j++)
-      {
-        switch (TileAt(Vec2(i, j)).type)
-        {
-          case 3:
-            //Debug.Log(TileAt(Vec2(i, j)).subtype);
-            if ((bool)rooms[TileAt(Vec2(i, j)).subtype])
-            {
-
-                //SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
-            }
-            else
-            {
-              if (((TileAt(Vec2(i + 1, j)).type == -1 || TileAt(Vec2(i + 1, j)).type == 2)
-                  && (TileAt(Vec2(i - 1, j)).type == -1 || TileAt(Vec2(i - 1, j)).type == 2))
-                  || ((TileAt(Vec2(i, j + 1)).type == -1 || TileAt(Vec2(i, j + 1)).type == 2)
-                  && (TileAt(Vec2(i, j - 1)).type == -1 || TileAt(Vec2(i, j - 1)).type == 2)))
-              {
-                rooms[TileAt(Vec2(i, j)).subtype] = true;
-                //SetTileAt(Vec2(i, j), Tile(3, 0, 0));
-              }
-              else
-              {
-                SetTileAt(Vec2(i, j), Tile(1, TileAt(Vec2(i, j)).subtype, 0));
-              }
-            }
-            if (CheckOrthogonal(Vec2(i, j), 1) > 2)
-            {
-              SetTileAt(Vec2(i, j), Tile(1, 1, 0));
-            }
-            break;
-
-          case -1:
-            if (Random.Range(0, 10) == 5)
-            {
-              //SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
-            }
-            break;
-
-          case 2:
-            if (Random.Range(0, 15) == 5)
-            {
-              //SetTileAt(Vec2(i, j), Tile(-1, -2, 0));
-            }
-            break;
-        }
-        //actual stuff stops here
-      }
-    }
-  }
-
-  int MazeGen(ref ArrayList maze)
-  {
-    int blocksCreated = 0;
-    /*
-    if (maze.Count < 1)
-    {
-      return 9999;
-    }
-    for (int j = 0; j < maze.Count; j++)
-    {
-      int randomX = Random.Range(-1, 2);
-      int randomY = randomX == 0 ? Random.Range(-1, 2) : 0;
-      Point currentPoint = (Point)maze[j];
-      if (currentPoint.x == -1)
-      {
-        //Debug.Log(currentPoint.x + "a" + currentPoint.y);
-        break;
-      }
-      
-      if (CheckAdjacent(currentPoint + Vec2(randomX, randomY), 1) < 4 && TileAt(currentPoint + Vec2(randomX, randomY)).type == 0 && CheckAdjacent(currentPoint + Vec2(randomX, randomY), 2) < 3)
-       // && CheckDiagonal(currentPoint + Vec2(randomX, randomY), 2) < 1)
-      {
-        Debug.Log(CheckDiagonal(currentPoint + Vec2(randomX, randomY), 2));
-        SetTileAt(currentPoint + Vec2(randomX, randomY), Tile(2, 1, 1));
-        maze.Add(currentPoint + Vec2(randomX, randomY));
-      }
-      else
-      {
-        
-        if (CheckAdjacent(currentPoint, 1) > 3)
-        {
-          maze.RemoveAt(j);
-          break;
-        }
-      }
-    }*/
-    if (maze.Count < 1)
-    {
-      return 9999;
-    }
-    for (int j = 0; j < maze.Count; j++)
-    {
-      int randomX = Random.Range(-1, 2);
-      int randomY = randomX == 0 ? Random.Range(-1, 2) : 0;
-      randomX *= 2;
-      randomY *= 2;
-      Point currentPoint = (Point)maze[j];
-      if (currentPoint.x == -1)
-      {
-        //Debug.Log(currentPoint.x + "a" + currentPoint.y);
-        break;
-      }
-
-      Point testPoint = currentPoint + Vec2(randomX, randomY);
-      if (CheckAreaFor(currentPoint + Vec2(randomX - 1, randomY - 1), Vec2(4, 4), 1) < 1
-        && CheckAreaFor(currentPoint + Vec2(randomX - 1, randomY - 1), Vec2(4, 4), 2) < 4
-        && (((randomX == 2 && (TileAt(testPoint + Vec2(2, 2)).type == 0)) && (TileAt(testPoint + Vec2(2, -1)).type == 0)) //diagonals checking depending on direction
-        || ((randomX == -2 && (TileAt(testPoint + Vec2(-1, 2)).type == 0)) && (TileAt(testPoint + Vec2(-1, -1)).type == 0)) //damn that's a clusterfuck
-        || ((randomY == -2 && (TileAt(testPoint + Vec2(-1, -1)).type == 0)) && (TileAt(testPoint + Vec2(2, -1)).type == 0)) //I guess it's organized, but that's pretty hard to read.
-        || ((randomY == 2 && (TileAt(testPoint + Vec2(-1, 2)).type == 0)) && (TileAt(testPoint + Vec2(2, 2)).type == 0))
-        ))
-      // && (TileAt(testPoint + Vec2(-1, 2)).type == 0) && (TileAt(testPoint + Vec2(-1, 2)).type == 0) && (TileAt(testPoint + Vec2(-1, -1)).type == 0))
-      {
-
-        if (randomX == 0)
-        {
-          FillArea(testPoint, Vec2(2, 2), Tile(2, 1, 1), true);
-          //SetTileAt(currentPoint + Vec2(randomX, randomY), Tile(2, 1, 1));
-        }
-        else
-        {
-          FillArea(testPoint, Vec2(2, 2), Tile(2, 1, 1), true);
-        }
-
-        maze.Add(testPoint);
-        blocksCreated++;
-      }
-      else
-      {
-        if (CheckAreaFor(currentPoint, Vec2(4, 4), 2) > 10)
-        {
-          maze.RemoveAt(j);
-          break;
-        }
-      }
-    }
-    return blocksCreated;
-  }
   void SpawnMap() //actually instantiates objects according to array
   {
     //index vars:
@@ -441,8 +389,8 @@ public class MapGeneration : Photon.MonoBehaviour
               }
             }
             break;
-          case 3: //debug fallthroguh
-            //SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
+          case 4: //debug fallthroguh
+            SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
             break;
             /*
             case 0:
@@ -472,134 +420,6 @@ public class MapGeneration : Photon.MonoBehaviour
     //note that location is doubled in magnitude because tiles are 2x2 and not 1x1
     Vector3 worldPosition = new Vector3(location.x * 2, location.y * 2, height);
     return (GameObject)Instantiate(thing, worldPosition, Quaternion.identity);
-  }
-
-  bool FillRandomRoom(Point sizeMin, Point sizeMax, int tileMeta) //tilemeta sets subtype of tile object
-  {
-    Point size = Vec2(//random room size within boundaries
-      Random.Range(sizeMin.x, sizeMax.x),
-      Random.Range(sizeMin.y, sizeMax.y));
-
-    Point position = Vec2(//random position within boundaries, size subtracted to avoid going out of bounds
-      Random.Range(1, mapWidth - size.x),
-      Random.Range(1, mapHeight - size.y));
-
-    position = (position / 2) * 2;
-    size = (size / 2) * 2;
-
-    if (CheckAreaFor(position, size, -1) == 0 && CheckAreaFor(position, size, 1) == 0) //if nothing's there
-    {
-      Room newRoom = new Room(Vec2(-1, 0), Vec2(-1, 0), position, size);
-      CreateRoom(ref newRoom, 16, Vec2(0, 0), tileMeta, true);
-
-      rooms.Add(tileMeta, false);
-      //FillBorders(position, size, Tile(1, tileMeta, 1), false, true, tileMeta);
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
-  void GenerateAdjacentRoom(ref Room inputRoom)
-  {
-
-  }
-  /*
-
-    create functions ar emeant to take existing structures as input, generates will spawn and return them
-    createdoors specifices number of doors to generate along the edges of the room
-    also modifies original room
-    doorbias determines what sides doors can spawn in
-    deterministic doors currently uses ultra simple functionality 
-  */
-  void CreateRoom(ref Room inputRoom, int createDoors, Point doorDirectionBias, int meta, bool deterministicDoors)
-  {
-    Point location = inputRoom.location;
-    Point size = inputRoom.size;
-    FillBorders(location, size, Tile(1, meta, 0), true, true, meta);
-
-    while (createDoors > 0) //generate doors
-    {
-      int random = (createDoors % 4) + 1;
-      if (!deterministicDoors)
-      {
-        random = Random.Range(1, 5);
-      }
-      Point door = Vec2(0, 0);
-      Point direction = Vec2(0, 0);
-      switch (random) //go along one of the 4 walls
-      {
-        case 1:
-          if (doorDirectionBias.x > -1)
-          {
-            door.y = (Random.Range(1, size.y - 3) / 2) * 2 + 2;
-            door.x = size.x - 1;
-            direction.x = 1;
-          }
-          else
-          {
-            door.x = -1;
-          }
-          break;
-        case 2:
-          if (doorDirectionBias.x < 1)
-          {
-            door.y = (Random.Range(1, size.y - 3) / 2) * 2 + 2;
-            door.x = 0;
-            direction.x = -1;
-          }
-          else
-          {
-            door.x = -1;
-          }
-          break;
-        case 3:
-          if (doorDirectionBias.y > -1)
-          {
-            door.x = (Random.Range(1, size.x - 3) / 2) * 2 + 2;
-            door.y = size.y - 1;
-            direction.y = 1;
-          }
-          else
-          {
-            door.x = -1;
-          }
-          break;
-        case 4:
-          if (doorDirectionBias.y < 1)
-          {
-            door.x = (Random.Range(1, size.x - 3) / 2) * 2 + 2;
-            door.y = 0;
-            direction.y = -1;
-          }
-          else
-          {
-            door.x = -1;
-          }
-          break;
-      }
-
-      if (door.x != -1 && TileAt(door).type != 3)
-      {
-        door = door + inputRoom.location;
-        inputRoom.doorDirections.Add(direction);
-
-        SetTileAt(door, Tile(3, meta, 0));
-        if (inputRoom.entrance.x == -1) //-1 x value means location uninitialized in this context
-        {
-          inputRoom.entrance = door;
-        }
-        createDoors--;
-      }
-
-      if (inputRoom.exit.x == -1)
-      {
-        inputRoom.exit = door;
-      }
-    }
   }
 
 
