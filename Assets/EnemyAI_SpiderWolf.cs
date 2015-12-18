@@ -74,6 +74,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           if (control.photonView.isMine)
           {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.2f);
+            PhotonNetwork.SendOutgoingCommands();
           }
           control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 800);
           attackPhase = 2;

@@ -4,8 +4,8 @@ using System.Collections;
 public class MapGeneration : Photon.MonoBehaviour
 {
   private bool isFirst;
-  private int mapHeight = 64;
-  private int mapWidth = 64;
+  private int mapHeight = 128;
+  private int mapWidth = 128;
   private Point mapSize;
   private int seed;
 
@@ -170,7 +170,7 @@ public class MapGeneration : Photon.MonoBehaviour
         loadState = 5;
         break;*/
       case 5:
-        GenerateEdges();
+        //GenerateEdges();
         loadState = 6;
         break;
       case 6:
@@ -240,7 +240,7 @@ public class MapGeneration : Photon.MonoBehaviour
     CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);*/
     Room startingRoom = CreateStartRoom(7, "StartRoom");
     startingRoom.roomNumber = 1;
-    DrawRoom(startingRoom, Vec2(mapWidth / 2 - 3, 10));
+    DrawRoom(startingRoom, Vec2(mapWidth / 2 - 3, 20));
 
     int i = 0;
     while (i++ < 5)
@@ -303,11 +303,11 @@ public class MapGeneration : Photon.MonoBehaviour
     switch (newRoom.roomType)
     {
       case "StartRoom":
-        FillBorders(location, newRoom.size, Tile(1, 0, 0), true, true, 1); //starting room's special meta value is 1 because fuck starting at zero right?
+        FillBorders(location, newRoom.size, Tile(1, 0, 0), false, true, 1); //starting room's special meta value is 1 because fuck starting at zero right?
         break; //seriously though the default value is 0 so that's why it's 1 here
 
       case "RegularRoom":
-        FillBorders(location, newRoom.size, Tile(1, 0, 0), true, true, newRoom.roomNumber);
+        FillBorders(location, newRoom.size, Tile(1, 0, 0), false, true, newRoom.roomNumber);
         break;
     }
 
@@ -317,42 +317,62 @@ public class MapGeneration : Photon.MonoBehaviour
 
   void DrawNextRoom(int index) //draw a room attached to the index room
   {
-    Room nextRoom = CreateSquareRoom(5, "RegularRoom");
-    Room currentRoom = (Room)rooms[index];
+    
     bool done = false; //used to repeatedly try things
-
-    int randomDoor = 0;
-    Point randomDoorDirection;
-    int originalDoor = -1;
-
-    while (!done) //find a connection
+    bool reallyDone = false; //used to repeatedly try larger scale things
+    int counter = 0;
+    
+    while (!reallyDone)
     {
-      randomDoor = Random.Range(0, (currentRoom.doors.Count)); //pick a random door index
-      randomDoorDirection = (Point)currentRoom.doorDirections[randomDoor]; //get direction of that index
-      originalDoor = -1; //index of the door on the original room to join to
-
-      for (int i = 0; i < nextRoom.doors.Count; i++)
+      Room nextRoom = CreateSquareRoom(Random.Range(2, 5) * 2 + 1, "RegularRoom");
+      Debug.Log(Random.Range(2, 5));
+      Room currentRoom = (Room)rooms[index];
+      int randomDoor = 0;
+      Point randomDoorDirection;
+      int originalDoor = -1;
+      done = false;
+      while (!done) //find a connection
       {
-        //find a door on the original room in the opposite direction of the randomly chosen door on the new room:
-        if ((Point)nextRoom.doorDirections[i] == (randomDoorDirection * -1)) 
+        randomDoor = Random.Range(0, (currentRoom.doors.Count)); //pick a random door index
+        randomDoorDirection = (Point)currentRoom.doorDirections[randomDoor]; //get direction of that index
+        originalDoor = -1; //index of the door on the original room to join to
+
+        for (int i = 0; i < nextRoom.doorDirections.Count; i++)
         {
-          originalDoor = i;
+          //find a door on the original room in the opposite direction of the randomly chosen door on the new room:
+          if ((Point)nextRoom.doorDirections[i] == (randomDoorDirection * -1))
+          {
+            originalDoor = i;
+          }
+        }
+
+        if (originalDoor != -1)
+        {
+          done = true; //stop seraching once a connection is found
         }
       }
 
-      if (originalDoor != -1)
+
+      Point newRoomLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor] + (Point)currentRoom.doorDirections[originalDoor] - (Point)nextRoom.doors[randomDoor];
+      //Debug.Log(newRoomLocation.x + "|" + newRoomLocation.y + "|||" + nextRoom.size.x + "|" + nextRoom.size.y);
+
+      if (CheckAreaFor(newRoomLocation, nextRoom.size, -1) == 0)
       {
-        done = true; //stop seraching once a connection is found
+        DrawRoom(nextRoom, newRoomLocation);
+
+        Point doorLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor];
+        SetTileAt(doorLocation, Tile(3, 0, 0));
+        SetTileAt(doorLocation + (Point)currentRoom.doorDirections[originalDoor], Tile(3, 0, 0));
+
+        reallyDone = true;
       }
+
+      counter++;
+      if (counter > 50)
+        reallyDone = true; //stop that. stop trying things.
     }
 
     
-    Point newRoomLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor] + (Point)currentRoom.doorDirections[originalDoor] - (Point)nextRoom.doors[randomDoor];
-    DrawRoom(nextRoom, newRoomLocation);
-
-    Point doorLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor];
-    SetTileAt(doorLocation, Tile(4, 0, 0));
-    SetTileAt(doorLocation + (Point)currentRoom.doorDirections[originalDoor], Tile(4, 0, 0));
     //if(CheckAreaFor(currentRoom.location + (Point)currentRoom.doors[originalDoor]
 
   }
@@ -362,7 +382,7 @@ public class MapGeneration : Photon.MonoBehaviour
     //index vars:
     int i, j;
 
-    Point startingPoint = Vec2(-mapWidth / 2, -12);
+    Point startingPoint = Vec2(-mapWidth / 2, -22);
 
     for (i = 0; i < mapWidth; i++) //looping through every item
     {
@@ -389,7 +409,7 @@ public class MapGeneration : Photon.MonoBehaviour
               }
             }
             break;
-          case 4: //debug fallthroguh
+          case 3: //debug fallthroguh
             SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
             break;
             /*
@@ -409,7 +429,7 @@ public class MapGeneration : Photon.MonoBehaviour
 
     if (isFirst)
     {
-      GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 3, 0), Quaternion.identity, 0);
+      GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3(0, 13, 0), Quaternion.identity, 0);
       newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
     }
   }

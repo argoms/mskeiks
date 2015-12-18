@@ -162,44 +162,41 @@ public class PlayerControl : Photon.MonoBehaviour
     if (stream.isWriting)
     {
       stream.SendNext(rigidbody.position);
+      stream.SendNext(rigidbody.velocity);
       stream.SendNext(transform.rotation);
       stream.SendNext(health);
-      /*if (!photonView.isMine)
-      {
-        stream.SendNext(transform.rotation);
-      }*/
-      //stream.SendNext(rigidbody.velocity);
     }
     else
     {
       //rigidbody.position = (Vector3)stream.ReceiveNext();
-      
-      syncEndPosition = (Vector2)stream.ReceiveNext();
-      syncStartPosition = rigidbody.position;
+
+      //position
+      Vector2 syncPosition;
+      syncPosition = (Vector2)stream.ReceiveNext();
+
+      //velocity
+      Vector2 syncVelocity;
+      syncVelocity = (Vector2)stream.ReceiveNext();
+
+      //syncEndPosition = (Vector2)stream.ReceiveNext();
+      //syncStartPosition = rigidbody.position;
+
+      //rotation
       rotationEnd = (Quaternion)stream.ReceiveNext();
+
+      //health
       health = (int)stream.ReceiveNext();
-      /*if (!photonView.isMine)
-      {
-        rotationEnd = (Quaternion)stream.ReceiveNext();
-        rotationStart = transform.rotation;
-      }*/
-      //attacking = (bool)stream.ReceiveNext();
+      
+      //sync timing
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
       lastSynchronizationTime = Time.time;
 
+
       //client side prediction:
-      /*
-      Vector3 syncPosition = (Vector3)stream.ReceiveNext();
-      Vector3 syncVelocity = (Vector3)stream.ReceiveNext();
 
-      syncTime = 0f;
-      syncDelay = Time.time - lastSynchronizationTime;
-      lastSynchronizationTime = Time.time;*/
-
-      //syncEndPosition = syncPosition + syncVelocity * syncDelay;
-      //syncStartPosition = rigidbody.position;
-
+      syncEndPosition = syncPosition + syncVelocity * syncDelay;
+      syncStartPosition = rigidbody.position;
 
     }
   }

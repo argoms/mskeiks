@@ -71,6 +71,8 @@ public class EnemyControl : Photon.MonoBehaviour
     tracer.transform.parent = transform;
     tracer.GetComponent<AttackTracerBehavior>().lifetime = attackLifetime;
     tracer.GetComponent<AttackTracerBehavior>().friendly = false;
+
+    PhotonNetwork.SendOutgoingCommands();
   }
 
   public void Hit(int damage) //called when entity is hit by an attack
@@ -93,35 +95,40 @@ public class EnemyControl : Photon.MonoBehaviour
     if (stream.isWriting)
     {
       stream.SendNext(rigidbody.position);
+      stream.SendNext(rigidbody.velocity);
       stream.SendNext(transform.rotation);
       stream.SendNext(health);
-      //stream.SendNext(rigidbody.velocity);
     }
     else
     {
       //rigidbody.position = (Vector3)stream.ReceiveNext();
 
-      syncEndPosition = (Vector2)stream.ReceiveNext();
-      syncStartPosition = rigidbody.position;
+      //position
+      Vector2 syncPosition;
+      syncPosition = (Vector2)stream.ReceiveNext();
 
+      //velocity
+      Vector2 syncVelocity;
+      syncVelocity = (Vector2)stream.ReceiveNext();
+
+      //syncEndPosition = (Vector2)stream.ReceiveNext();
+      //syncStartPosition = rigidbody.position;
+
+      //rotation
       rotationEnd = (Quaternion)stream.ReceiveNext();
+
+      //health
       health = (int)stream.ReceiveNext();
 
+      //sync timing
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
       lastSynchronizationTime = Time.time;
 
+
       //client side prediction:
-      /*
-      Vector3 syncPosition = (Vector3)stream.ReceiveNext();
-      Vector3 syncVelocity = (Vector3)stream.ReceiveNext();
-
-      syncTime = 0f;
-      syncDelay = Time.time - lastSynchronizationTime;
-      lastSynchronizationTime = Time.time;*/
-
-      //syncEndPosition = syncPosition + syncVelocity * syncDelay;
-      //syncStartPosition = rigidbody.position;
+      syncEndPosition = syncPosition + syncVelocity * syncDelay;
+      syncStartPosition = rigidbody.position;
 
 
     }
