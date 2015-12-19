@@ -66,6 +66,13 @@ public class LoginMenuBehavior : MonoBehaviour {
     //    Debug.Log("Username: " + usernameField.text);
     //    Debug.Log("Password: " + passwordField.text);
     manager.Login(usernameField.text, passwordField.text);
+    if (manager.playerDisplayName != "")
+    {
+      Debug.Log("Loginworked");
+      gameManager.GetComponent<NetworkManager>().enabled = true;
+      Destroy(transform.parent.gameObject);
+      //gameManager.GetComponent<MapGeneration>().enabled = true;
+    }
     //    username = usernameField.GetComponentInChildren<Text>
     //Debug.Log("potatoes all of you");
   }

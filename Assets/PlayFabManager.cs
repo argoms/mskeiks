@@ -134,6 +134,7 @@ public class PlayFabManager : MonoBehaviour {
     request.TitleId = TitleId;
     PlayFabClientAPI.RegisterPlayFabUser(request, OnRegistrationCompleted, OnLoginError);
     
+    
   }
 
   void OnUserCreated(ProjectDelegates.PlayFabLoginCallback result)
@@ -158,7 +159,7 @@ public class PlayFabManager : MonoBehaviour {
 
   void OnLoginError(PlayFabError error)
   {
-    playerDisplayName = null;
+    playerDisplayName = "";
     Debug.Log("Login error: " + error.Error + " " + error.ErrorMessage);
     
   }
@@ -183,7 +184,7 @@ public class PlayFabManager : MonoBehaviour {
 
   void OnLoginCompleted(LoginResult result)
   {
-    Debug.Log(playerDisplayName);
+    //Debug.Log(playerDisplayName);
     playerID = result.PlayFabId;
 
     //PushNotificationsManager.instance.Register();

@@ -328,7 +328,7 @@ public class MapGeneration : Photon.MonoBehaviour
     while (!reallyDone)
     {
       Room nextRoom = CreateSquareRoom(Random.Range(2, 5) * 2 + 1, "RegularRoom");
-      Debug.Log(Random.Range(2, 5));
+      //Debug.Log(Random.Range(2, 5));
       Room currentRoom = (Room)rooms[index];
       int randomDoor = 0;
       Point randomDoorDirection;

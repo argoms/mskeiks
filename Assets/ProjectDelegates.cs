@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using PlayFab.ClientModels;
 
+/*
+
+  I just... Don't... Get it...
+
+
+  for now at least :I
+*/
 /// <summary>
 /// Delegates class, containing references for all the delegates used.
 /// </summary>

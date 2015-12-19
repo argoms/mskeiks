@@ -10,10 +10,11 @@ public class NetworkManager :Photon. MonoBehaviour
   private RoomInfo[] roomsList;
   public GameObject playerPrefab;
   public GameObject level;
+  public string version;
 
   void Start()
   {
-    PhotonNetwork.ConnectUsingSettings("v0.0.21");
+    PhotonNetwork.ConnectUsingSettings(version);
     
   }
 

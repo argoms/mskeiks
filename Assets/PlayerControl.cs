@@ -23,6 +23,7 @@ public class PlayerControl : Photon.MonoBehaviour
   private Quaternion rotationStart;
   private TextMesh healthText;
   public int health = 10;
+  private PlayFabManager playManager;
 
   void Start()
   {
@@ -36,6 +37,7 @@ public class PlayerControl : Photon.MonoBehaviour
     camera = GameObject.Find("Camera");
 
     healthText = transform.Find("HealthDisplay").gameObject.GetComponent<TextMesh>();
+    playManager = Object.FindObjectOfType<PlayFabManager>();
   }
 
   void Update()
@@ -64,7 +66,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void UpdateHUD()
   {
-    healthText.text = "" + health;
+    healthText.text = playManager.playerDisplayName + ": " + health;
   }
 
   void InputMovement()
