@@ -202,4 +202,35 @@ public class PlayerControl : Photon.MonoBehaviour
 
     }
   }
+
+  //collisions with pickups/zones etc.:
+  void OnTriggerEnter2D(Collider2D coll)
+  {
+   // Debug.Log("hitathing");
+    if (coll.gameObject.layer == 14) 
+    {
+      if (photonView.isMine)
+      {
+        if (coll.GetComponent<TransitionZoneBehavior>() != null)
+        {
+          coll.GetComponent<TransitionZoneBehavior>().enabled = true;
+        }
+      }
+    }
+  }
+
+  void OnTriggerExit2D(Collider2D coll)
+  {
+    //Debug.Log("Leftathing");
+    if (coll.gameObject.layer == 14)
+    {
+      if (photonView.isMine)
+      {
+        if (coll.GetComponent<TransitionZoneBehavior>() != null)
+        {
+          coll.GetComponent<TransitionZoneBehavior>().enabled = false;
+        }
+      }
+    }
+  }
 }

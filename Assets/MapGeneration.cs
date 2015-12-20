@@ -169,8 +169,10 @@ public class MapGeneration : Photon.MonoBehaviour
     startingMapRoom.roomNumber = 1;
     DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 3, 20));
 
-    MapRoom newRoom = CreateRectangleRoom(Vec2(11, 5), "hubpotato");
+    MapRoom newRoom = CreateRectangleRoom(Vec2(6, 5), "hubpotato");
     AttachRoomTo(0, 0, newRoom);
+
+    SetTileAt(Vec2(70, 23), Tile(4, 0, 0));
 
     /*
     int i = 0;
@@ -413,7 +415,7 @@ public class MapGeneration : Photon.MonoBehaviour
     {
       for (j = 0; j < mapHeight; j++)
       {
-        GameObject tile = this.gameObject;
+        GameObject tile = null;
         //actual stuff goes here
         switch (mapArray[i, j].type)
         {
@@ -429,20 +431,24 @@ public class MapGeneration : Photon.MonoBehaviour
             {
               if (isFirst)
               {
-                GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
+                //GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
+                GameObject newEnemy = PhotonNetwork.InstantiateSceneObject("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0, null);
                 newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
               }
             }
             break;
           case 3: //debug fallthroguh
-            SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
+            tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
+            break;
+          case 4:
+            tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/TransitionZone"), 0);
             break;
             /*
             case 0:
               Debug.Log("null test");
               break;*/
         }
-        if (tile != this.gameObject)
+        if (tile != null)
         {
           tile.transform.parent = transform;
         }
@@ -672,4 +678,5 @@ public class MapGeneration : Photon.MonoBehaviour
   {
     mapArray[location.x, location.y] = tile;
   }
+
 }
