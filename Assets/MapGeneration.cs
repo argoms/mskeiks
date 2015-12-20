@@ -17,102 +17,19 @@ public class MapGeneration : Photon.MonoBehaviour
   */
   private int loadState = -1;
 
-  /*
-    Map objects
-    info for a given tile
-    0: background
-   -1: floor
-    1: basic wall
-    2: alternate wall (for debugging?)
-    3: door
-  */
-  struct MapObject
-  {
-    public MapObject(int _type, int _subtype, int _height)
-    {
-      type = _type;
-      subtype = _subtype;
-      height = _height;
-    }
-    public int type;
-    public int subtype;
-    public int height;
-  };
+  
 
-  struct Point
-  {
-    public Point(int _x, int _y)
-    {
-      x = _x;
-      y = _y;
-    }
+  
 
-    public static Point operator +(Point point1, Point point2) //point addition
-    {
-      return new Point(point1.x + point2.x, point1.y + point2.y);
-    }
-
-    public static Point operator -(Point point1, Point point2) //point subtraction
-    {
-      return new Point(point1.x - point2.x, point1.y - point2.y);
-    }
-
-    public static Point operator *(Point input, int scalar) //scalar multiplication
-    {
-      return new Point(input.x * scalar, input.y * scalar);
-    }
-
-    public static Point operator /(Point input, int scalar) //scalar division
-    {
-      return new Point(input.x / scalar, input.y / scalar);
-    }
-
-    public static bool operator ==(Point point1, Point point2) //equality check
-    {
-      return (point1.x == point2.x) && (point1.y == point2.y) ;
-    }
-
-    public static bool operator !=(Point point1, Point point2) //not equals check
-    {
-      return !((point1.x == point2.x) && (point1.y == point2.y));
-    }
-
-    public int x;
-    public int y;
-  };
-
-  struct Room
-  {
-    public Room(Point _entrance, Point _exit, Point _location, Point _size, string _roomType, int _roomNumber)
-    {
-      entrance = _entrance;
-      exit = _exit;
-      location = _location;
-      size = _size;
-      doorDirections = new ArrayList();
-      doors = new ArrayList();
-      roomType = _roomType;
-      roomNumber = _roomNumber;
-      //doors.Add(entrance);
-      //doors.Add(exit);
-    }
-
-    //ArrayList doors;
-    public Point entrance;
-    public Point exit;
-    public Point location;
-    public Point size;
-    public ArrayList doorDirections;
-    public ArrayList doors;
-    public string roomType;
-    public int roomNumber;
-  };
+  
 
   int mapLength = 0;
   MapObject[,] mapArray;
   private TextMesh loadingText;
   private int counter;
   private Hashtable rooms;
+
+  private int mapType;
 
   void Start()
   {
@@ -122,6 +39,7 @@ public class MapGeneration : Photon.MonoBehaviour
     mapSize = Vec2(mapWidth, mapHeight);
     rooms = new Hashtable();
 
+    mapType = (int)PhotonNetwork.room.customProperties["map"];
     Debug.Log("generating map with seed " + seed + (isFirst ? " as master" : " as client"));
 
     loadingText.text = "generating map";
@@ -136,6 +54,7 @@ public class MapGeneration : Photon.MonoBehaviour
 
   void Update()
   {
+
     switch (loadState)
     {
       case 10:
@@ -144,31 +63,20 @@ public class MapGeneration : Photon.MonoBehaviour
         Debug.Log("beginning mapgen");
         GenerateMapArray();
 
+        loadState = 1;
+        break;
+      case 1:
+        switch (mapType)
+        {
+          case 0:
+            HubGen();
+            break;
+          case 1:
+            ForestMapGen();
+            break;
+        }
         loadState = 5;
         break;
-      /*case 1:
-        counter += MazeGen(ref maze);
-        if (counter > 64)
-        {
-          loadState = 2;
-        }
-        break;
-      case 2:
-        counter = 0;
-        RandomRoomsGen(8);
-        loadState = 3;
-        break;
-      case 3:
-        counter += MazeGen(ref maze);
-        if (counter > 64)
-        {
-          loadState = 4;
-        }
-        break;
-      case 4:
-        RoomDoorsGen();
-        loadState = 5;
-        break;*/
       case 5:
         //GenerateEdges();
         loadState = 6;
@@ -185,6 +93,7 @@ public class MapGeneration : Photon.MonoBehaviour
         //this.GetComponent<LevelManager>().playerList.Add(newPlayer);
         this.GetComponent<LevelManager>().UpdateList(); // photonView.RPC("AddPlayer", PhotonTargets.All, newPlayer);
         loadState = 10; //done loading
+        enabled = false;
         break;
 
     }
@@ -236,89 +145,143 @@ public class MapGeneration : Photon.MonoBehaviour
 
     //make starting 5x5 room:
     /*
-    Room startingRoom = new Room(Vec2(mapWidth / 2 - 3, 10), Vec2(-1, 0), Vec2(mapWidth / 2 - 3, 10), Vec2(7, 7));
-    CreateRoom(ref startingRoom, 1, Vec2(0, 1), 0, false);*/
-    Room startingRoom = CreateStartRoom(7, "StartRoom");
-    startingRoom.roomNumber = 1;
-    DrawRoom(startingRoom, Vec2(mapWidth / 2 - 3, 20));
+    MapRoom startingMapRoom = new MapRoom(Vec2(mapWidth / 2 - 3, 10), Vec2(-1, 0), Vec2(mapWidth / 2 - 3, 10), Vec2(7, 7));
+    CreateMapRoom(ref startingMapRoom, 1, Vec2(0, 1), 0, false);*/
+    
+  }
+
+  void ForestMapGen()
+  {
+    MapRoom startingMapRoom = CreateStartMapRoom(7, "StartMapRoom");
+    startingMapRoom.roomNumber = 1;
+    DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 3, 20));
 
     int i = 0;
     while (i++ < 5)
     {
-      DrawNextRoom(mapLength - 1);
+      DrawNextMapRoom(mapLength - 1);
     }
   }
 
-  Room CreateSquareRoom(int size, string type)
+  void HubGen()
   {
-    Room newRoom = new Room();
-    newRoom.doorDirections = new ArrayList();
-    newRoom.doors = new ArrayList();
+    MapRoom startingMapRoom = CreateStartMapRoom(7, "StartMapRoom");
+    startingMapRoom.roomNumber = 1;
+    DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 3, 20));
 
-    newRoom.location = Vec2(-1, 0);
-    newRoom.size = Vec2(size, size);
+    MapRoom newRoom = CreateRectangleRoom(Vec2(11, 5), "hubpotato");
+    AttachRoomTo(0, 0, newRoom);
 
-    newRoom.doors.Add(Vec2(0, newRoom.size.y / 2)); //door going left
-    newRoom.doorDirections.Add(Vec2(-1, 0));
-
-    newRoom.doors.Add(Vec2(newRoom.size.x - 1, newRoom.size.y / 2)); //door going right
-    newRoom.doorDirections.Add(Vec2(1, 0));
-
-    newRoom.doors.Add(Vec2(newRoom.size.x / 2, 0)); //door going down
-    newRoom.doorDirections.Add(Vec2(0, -1));
-
-    newRoom.doors.Add(Vec2(newRoom.size.x / 2, newRoom.size.y - 1)); //door going up;
-    newRoom.doorDirections.Add(Vec2(0, 1));
-
-    
-
-    newRoom.roomType = type;
-    return newRoom;
-  }
-
-  Room CreateStartRoom(int size, string type)
-  {
-    Room newRoom = new Room();
-    newRoom.doorDirections = new ArrayList();
-    newRoom.doors = new ArrayList();
-
-    newRoom.location = Vec2(-1, 0);
-    newRoom.size = Vec2(size, size);
-
-    newRoom.doors.Add(Vec2(0, newRoom.size.y / 2)); //door going left
-    newRoom.doorDirections.Add(Vec2(-1, 0));
-
-    newRoom.doors.Add(Vec2(newRoom.size.x - 1, newRoom.size.y / 2)); //door going right
-    newRoom.doorDirections.Add(Vec2(1, 0));
-
-    newRoom.doors.Add(Vec2(newRoom.size.x / 2, newRoom.size.y - 1)); //door going up;
-    newRoom.doorDirections.Add(Vec2(0, 1));
-
-    newRoom.roomType = type;
-    return newRoom;
-  }
-
-  void DrawRoom(Room newRoom, Point location)
-  {
-    
-    newRoom.location = location;
-    switch (newRoom.roomType)
+    /*
+    int i = 0;
+    while (i++ < 5)
     {
-      case "StartRoom":
-        FillBorders(location, newRoom.size, Tile(1, 0, 0), false, true, 1); //starting room's special meta value is 1 because fuck starting at zero right?
+      DrawNextMapRoom(mapLength - 1);
+    }*/
+  }
+
+  MapRoom CreateSquareMapRoom(int size, string type)
+  {
+    MapRoom newMapRoom = new MapRoom();
+    newMapRoom.doorDirections = new ArrayList();
+    newMapRoom.doors = new ArrayList();
+
+    newMapRoom.location = Vec2(-1, 0);
+    newMapRoom.size = Vec2(size, size);
+
+    newMapRoom.doors.Add(Vec2(0, newMapRoom.size.y / 2)); //door going left
+    newMapRoom.doorDirections.Add(Vec2(-1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x - 1, newMapRoom.size.y / 2)); //door going right
+    newMapRoom.doorDirections.Add(Vec2(1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x / 2, 0)); //door going down
+    newMapRoom.doorDirections.Add(Vec2(0, -1));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x / 2, newMapRoom.size.y - 1)); //door going up;
+    newMapRoom.doorDirections.Add(Vec2(0, 1));
+
+    
+
+    newMapRoom.roomType = type;
+    return newMapRoom;
+  }
+
+  MapRoom CreateRectangleRoom(Point size, string type)
+  {
+    MapRoom newMapRoom = new MapRoom();
+    newMapRoom.doorDirections = new ArrayList();
+    newMapRoom.doors = new ArrayList();
+
+    newMapRoom.location = Vec2(-1, 0);
+    newMapRoom.size = Vec2(size.x, size.y);
+
+    newMapRoom.doors.Add(Vec2(0, newMapRoom.size.y / 2)); //door going left
+    newMapRoom.doorDirections.Add(Vec2(-1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x - 1, newMapRoom.size.y / 2)); //door going right
+    newMapRoom.doorDirections.Add(Vec2(1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x / 2, 0)); //door going down
+    newMapRoom.doorDirections.Add(Vec2(0, -1));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x / 2, newMapRoom.size.y - 1)); //door going up;
+    newMapRoom.doorDirections.Add(Vec2(0, 1));
+
+
+
+    newMapRoom.roomType = type;
+    return newMapRoom;
+  }
+
+  MapRoom CreateStartMapRoom(int size, string type)
+  {
+    MapRoom newMapRoom = new MapRoom();
+    newMapRoom.doorDirections = new ArrayList();
+    newMapRoom.doors = new ArrayList();
+
+    newMapRoom.location = Vec2(-1, 0);
+    newMapRoom.size = Vec2(size, size);
+
+    newMapRoom.doors.Add(Vec2(0, newMapRoom.size.y / 2)); //door going left
+    newMapRoom.doorDirections.Add(Vec2(-1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x - 1, newMapRoom.size.y / 2)); //door going right
+    newMapRoom.doorDirections.Add(Vec2(1, 0));
+
+    newMapRoom.doors.Add(Vec2(newMapRoom.size.x / 2, newMapRoom.size.y - 1)); //door going up;
+    newMapRoom.doorDirections.Add(Vec2(0, 1));
+
+    newMapRoom.roomType = type;
+    return newMapRoom;
+  }
+  
+  void DrawMapRoom(MapRoom newMapRoom, Point location)
+  {
+    
+    newMapRoom.location = location;
+    switch (newMapRoom.roomType)
+    {
+      case "StartMapRoom":
+        FillBorders(location, newMapRoom.size, Tile(1, 0, 0), false, true, 1); //starting room's special meta value is 1 because fuck starting at zero right?
         break; //seriously though the default value is 0 so that's why it's 1 here
 
-      case "RegularRoom":
-        FillBorders(location, newRoom.size, Tile(1, 0, 0), false, true, newRoom.roomNumber);
-        SetTileAt(location + (newRoom.size / 2), Tile(-1, -2, 0)); 
+      case "RegularMapRoom":
+        FillBorders(location, newMapRoom.size, Tile(1, 0, 0), false, true, newMapRoom.roomNumber);
+        SetTileAt(location + (newMapRoom.size / 2), Tile(-1, -2, 0)); 
+
         break;
+      default:
+        FillBorders(location, newMapRoom.size, Tile(1, 0, 0), false, true, newMapRoom.roomNumber); //starting room's special meta value is 1 because fuck starting at zero right?
+        break;
+
     }
 
-    rooms.Add(mapLength, newRoom);
+    rooms.Add(mapLength, newMapRoom);
     mapLength++;
   }
 
-  void DrawNextRoom(int index) //draw a room attached to the index room
+  void DrawNextMapRoom(int index) //draw a room attached to the index room
   {
     
     bool done = false; //used to repeatedly try things
@@ -327,23 +290,23 @@ public class MapGeneration : Photon.MonoBehaviour
     
     while (!reallyDone)
     {
-      Room nextRoom = CreateSquareRoom(Random.Range(2, 5) * 2 + 1, "RegularRoom");
+      MapRoom nextMapRoom = CreateSquareMapRoom(Random.Range(2, 5) * 2 + 1, "RegularMapRoom");
       //Debug.Log(Random.Range(2, 5));
-      Room currentRoom = (Room)rooms[index];
+      MapRoom currentMapRoom = (MapRoom)rooms[index];
       int randomDoor = 0;
       Point randomDoorDirection;
       int originalDoor = -1;
       done = false;
       while (!done) //find a connection
       {
-        randomDoor = Random.Range(0, (currentRoom.doors.Count)); //pick a random door index
-        randomDoorDirection = (Point)currentRoom.doorDirections[randomDoor]; //get direction of that index
+        randomDoor = Random.Range(0, (currentMapRoom.doors.Count)); //pick a random door index
+        randomDoorDirection = (Point)currentMapRoom.doorDirections[randomDoor]; //get direction of that index
         originalDoor = -1; //index of the door on the original room to join to
 
-        for (int i = 0; i < nextRoom.doorDirections.Count; i++)
+        for (int i = 0; i < nextMapRoom.doorDirections.Count; i++)
         {
           //find a door on the original room in the opposite direction of the randomly chosen door on the new room:
-          if ((Point)nextRoom.doorDirections[i] == (randomDoorDirection * -1))
+          if ((Point)nextMapRoom.doorDirections[i] == (randomDoorDirection * -1))
           {
             originalDoor = i;
           }
@@ -356,16 +319,16 @@ public class MapGeneration : Photon.MonoBehaviour
       }
 
 
-      Point newRoomLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor] + (Point)currentRoom.doorDirections[originalDoor] - (Point)nextRoom.doors[randomDoor];
-      //Debug.Log(newRoomLocation.x + "|" + newRoomLocation.y + "|||" + nextRoom.size.x + "|" + nextRoom.size.y);
+      Point newMapRoomLocation = currentMapRoom.location + (Point)currentMapRoom.doors[originalDoor] + (Point)currentMapRoom.doorDirections[originalDoor] - (Point)nextMapRoom.doors[randomDoor];
+      //Debug.Log(newMapRoomLocation.x + "|" + newMapRoomLocation.y + "|||" + nextMapRoom.size.x + "|" + nextMapRoom.size.y);
 
-      if (CheckAreaFor(newRoomLocation, nextRoom.size, -1) == 0)
+      if (CheckAreaFor(newMapRoomLocation, nextMapRoom.size, -1) == 0)
       {
-        DrawRoom(nextRoom, newRoomLocation);
+        DrawMapRoom(nextMapRoom, newMapRoomLocation);
 
-        Point doorLocation = currentRoom.location + (Point)currentRoom.doors[originalDoor];
+        Point doorLocation = currentMapRoom.location + (Point)currentMapRoom.doors[originalDoor];
         SetTileAt(doorLocation, Tile(3, 0, 0));
-        SetTileAt(doorLocation + (Point)currentRoom.doorDirections[originalDoor], Tile(3, 0, 0));
+        SetTileAt(doorLocation + (Point)currentMapRoom.doorDirections[originalDoor], Tile(3, 0, 0));
 
         reallyDone = true;
       }
@@ -376,7 +339,66 @@ public class MapGeneration : Photon.MonoBehaviour
     }
 
     
-    //if(CheckAreaFor(currentRoom.location + (Point)currentRoom.doors[originalDoor]
+    //if(CheckAreaFor(currentMapRoom.location + (Point)currentMapRoom.doors[originalDoor]
+
+  }
+
+  void AttachRoomTo(int index, int door, MapRoom newRoom) //draw a room attached to the index room at a given door, grossly inefficient at the moment since I just took the proc gen version and set a few things to constants
+  {
+
+    bool done = false; //used to repeatedly try things
+    bool reallyDone = false; //used to repeatedly try larger scale things
+    int counter = 0;
+
+    while (!reallyDone)
+    {
+      MapRoom nextMapRoom = newRoom;
+      //Debug.Log(Random.Range(2, 5));
+      MapRoom currentMapRoom = (MapRoom)rooms[index];
+      int randomDoor = 0;
+      Point randomDoorDirection;
+      int originalDoor = -1;
+      done = false;
+      while (!done) //find a connection
+      {
+        randomDoor = door; //pick a random door index
+        randomDoorDirection = (Point)currentMapRoom.doorDirections[randomDoor]; //get direction of that index
+        originalDoor = -1; //index of the door on the original room to join to
+
+        for (int i = 0; i < nextMapRoom.doorDirections.Count; i++)
+        {
+          //find a door on the original room in the opposite direction of the randomly chosen door on the new room:
+          if ((Point)nextMapRoom.doorDirections[i] == (randomDoorDirection * -1))
+          {
+            originalDoor = i;
+          }
+        }
+
+        if (originalDoor != -1)
+        {
+          done = true; //stop seraching once a connection is found
+        }
+      }
+
+
+      Point newMapRoomLocation = currentMapRoom.location + (Point)currentMapRoom.doors[originalDoor] + (Point)currentMapRoom.doorDirections[originalDoor] - (Point)nextMapRoom.doors[randomDoor];
+      //Debug.Log(newMapRoomLocation.x + "|" + newMapRoomLocation.y + "|||" + nextMapRoom.size.x + "|" + nextMapRoom.size.y);
+
+      if (CheckAreaFor(newMapRoomLocation, nextMapRoom.size, -1) == 0)
+      {
+        DrawMapRoom(nextMapRoom, newMapRoomLocation);
+
+        Point doorLocation = currentMapRoom.location + (Point)currentMapRoom.doors[originalDoor];
+        SetTileAt(doorLocation, Tile(3, 0, 0));
+        SetTileAt(doorLocation + (Point)currentMapRoom.doorDirections[originalDoor], Tile(3, 0, 0));
+
+        reallyDone = true;
+      }
+
+      counter++;
+      if (counter > 50)
+        reallyDone = true; //stop that. stop trying things.
+    }
 
   }
 
