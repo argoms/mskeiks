@@ -10,10 +10,6 @@ public class AttackTracerBehavior : MonoBehaviour {
     StartCoroutine(DieAfterTime());
     this.gameObject.layer = friendly ? 10 : 12; //12 is enemy 10 is friendly (projectile)
   }
-	
-	// Update is called once per frame
-	void Update () {
-	}
 
 
   IEnumerator DieAfterTime()
@@ -28,7 +24,7 @@ public class AttackTracerBehavior : MonoBehaviour {
   {
     if (coll.gameObject.layer == 11) //enemy entity layer num
     {
-      if (PhotonNetwork.isMasterClient)
+      if (PhotonNetwork.isMasterClient) //only master client creates damage text
       {
         PhotonNetwork.Instantiate("DamageText", coll.gameObject.transform.position, Quaternion.identity, 0);
         coll.GetComponent<EnemyControl>().Hit(1);

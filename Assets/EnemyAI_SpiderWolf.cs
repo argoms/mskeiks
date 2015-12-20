@@ -4,14 +4,14 @@ using System.Collections;
 [RequireComponent (typeof(EnemyControl))]
 public class EnemyAI_SpiderWolf : MonoBehaviour {
 
-  private GameObject level;
-  private EnemyControl control;
-  private LevelManager levelManager;
-  private float timer;
+  private GameObject level; //level object (containing tile objects as children & levelmanager component)
+  private EnemyControl control; //base control behavior
+  private LevelManager levelManager; //the levelmanager on GameObject level
+  private float timer; //internal timer for pauses between decisions
 
-  private GameObject target;
+  private GameObject target; //object that the spiderwolf wants to kill
 
-  private bool awake;
+  private bool awake; //waking up makes the AI pay more attention to things (longer aggro range etc.)
 
   //0 = not attacking
   //1 = winding up
@@ -22,33 +22,36 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   //0: none
   //1: lunge
   private int attackType = 0;
+
+
   //distance which lunge starts
   public float lungeDist = 3;
 
   private Vector3 attackDirection;
+
 	void Start ()
   {
+    //initialize vars/find components to reference later
     control = GetComponent<EnemyControl>();
     level = control.level;
     levelManager = level.GetComponent<LevelManager>();
     awake = true;
 	}
 	
-	// Update is called once per frame
 	void Update ()
   {
     timer -= Time.deltaTime;
     switch(attackPhase)
     {
-      case 0:
-        if (timer < 0)
+      case 0: //0: not attacking
+        if (timer < 0) //does this every second 
         {
           timer = 1;
-          target = FindClosestPlayer(awake ? 8 : 4);
+          target = FindClosestPlayer(awake ? 8 : 4); //search for a nearby player, distance to search depends on whether or not awake
         }
         if (target != null)
         {
-          awake = true;
+          awake = true; //wakes up upon finding target
           if (DistToTargetSQ() < lungeDist * lungeDist)
           {
 
@@ -59,21 +62,22 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
             control.movement = Vector2.zero;
             attackDirection = transform.rotation * Vector3.Normalize(target.transform.position - this.transform.position);
           } 
-          control.movement = Vector3.Normalize(target.transform.position - this.transform.position);
+
+          control.movement = Vector3.Normalize(target.transform.position - this.transform.position); //set movement direction for control behavior
           //control.movement = Vector2.up;
         }
         else
         {
-          control.movement = Vector2.zero;
+          control.movement = Vector2.zero; //tell control to stop moving
         }
         break;
-      case 1:
+      case 1: //1: winding up attack
         control.movement = Vector2.zero;
         if (timer < 0)
         {
           if (control.photonView.isMine)
           {
-            control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.2f);
+            control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.2f); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
           }
           control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 800);
@@ -81,14 +85,14 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           timer = 0.2f;
         }
         break;
-      case 2:
+      case 2: //2: attacking
         if (timer < 0)
         {
           attackPhase = 3;
           timer = 0.5f;
         }
         break;
-      case 3:
+      case 3: //3: after attack cooldown period
         if (timer < 0)
         {
           attackPhase = 0;
@@ -104,12 +108,12 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
     {
       if (attackType == 1)
       {
-        control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 100);
+        control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 100); //adds a bit more velocity non-instantaneously, allowing for a longer 'leap' with slower starting speed
       }
     }
   }
 
-  GameObject FindClosestPlayer(float maxDist)
+  GameObject FindClosestPlayer(float maxDist) //returns closest player, maxDist defines furthest away that a player will be recognized
   {
     
     int i = 0;
@@ -124,11 +128,11 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           GameObject selectedPlayer = (GameObject)levelManager.playerList[i];
 
-          //doesn't actually get distance, but works for relative measurements, square of actual distance
+          //doesn't actually get distance (gets the square of dist for faster calculation) , but works for relative measurements, square of actual distance
           float distanceIsh = DistanceSQ(this.transform.position.x - selectedPlayer.transform.position.x, this.transform.position.y - selectedPlayer.transform.position.y);
-          distanceIsh = distanceIsh < 0 ? distanceIsh * -1 : distanceIsh;
+          distanceIsh = distanceIsh < 0 ? distanceIsh * -1 : distanceIsh; //get absolute value
 
-          if (finalDistance > distanceIsh)
+          if (finalDistance > distanceIsh) //overwrites existing closest player if closer one is found
           {
             finalDistance = distanceIsh;
             finalPlayer = selectedPlayer;
@@ -144,12 +148,12 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
     }
   }
 
-  float DistanceSQ(float dx, float dy)
+  float DistanceSQ(float dx, float dy) //returns the square of the distance defined by vector (dx,dy)
   {
     return dx * dx + dy * dy;
   }
 
-  float DistToTargetSQ()
+  float DistToTargetSQ() //shortcut for calling distance to target object
   {
     return DistanceSQ(this.transform.position.x - target.transform.position.x, this.transform.position.y - target.transform.position.y);
   }

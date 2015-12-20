@@ -4,23 +4,30 @@ using System.Collections;
 public class EnemyControl : Photon.MonoBehaviour
 {
 
-  public float speed = 10f;
-  Rigidbody2D rigidbody;
+  public float speed = 10f; //movement speed, should actually be several orders of magnitude higher (player's speed is 4096 or so)
+  Rigidbody2D rigidbody; 
 
-  private float lastSynchronizationTime = 0f;
+  private float lastSynchronizationTime = 0f; //time since last sync from network
   private float syncDelay = 0f;
   private float syncTime = 0f;
+
+  //position storages for interpolation:
   private Vector3 syncStartPosition = Vector3.zero;
   private Vector3 syncEndPosition = Vector3.zero;
 
   public int health = 10;
   //private GameObject camera;
-  public Vector2 movement;
+  public Vector2 movement; //movement direction vector (0 = stationary)
 
-  private TextMesh healthText;
+  private TextMesh healthText; 
+
+  //maybe some day this'll be used for rotation interp, but right now rotationEnd is the only used one for directly syncing
   private Quaternion rotationEnd;
   private Quaternion rotationStart;
+
+
   public GameObject level;
+
   void Start()
   {
     level = FindObjectOfType<MapGeneration>().gameObject;
@@ -31,8 +38,10 @@ public class EnemyControl : Photon.MonoBehaviour
   void Update()
   {
     //Debug.Log(PhotonNetwork.GetPing());
-    healthText.text = ""+health;
-    if (photonView.isMine)
+
+    healthText.text = ""+health; //update hud
+
+    if (photonView.isMine) //master client controls movement etc., others just grab info over network and interpolate
     {
       InputMovement();
     }

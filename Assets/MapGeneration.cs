@@ -3,11 +3,14 @@ using System.Collections;
 
 public class MapGeneration : Photon.MonoBehaviour
 {
-  private bool isFirst;
+  private bool isFirst; //whether or not this is the master client
+  
+  //map dimensions:
   private int mapHeight = 128;
   private int mapWidth = 128;
   private Point mapSize;
-  private int seed;
+
+  private int seed; //map generation seed
 
   /*
   Load states
@@ -17,22 +20,22 @@ public class MapGeneration : Photon.MonoBehaviour
   */
   private int loadState = -1;
 
-  
-
-  
-
-  
-
-  int mapLength = 0;
-  MapObject[,] mapArray;
+  int mapLength = 0; //number of rooms in map
+  MapObject[,] mapArray; //array containing map tile data
   private TextMesh loadingText;
-  private int counter;
+  private int counter; //internal counter for various things
   private Hashtable rooms;
 
-  private int mapType;
+  /*
+  map types
+  0 hub
+  1 forest
+  */
+  private int mapType; 
 
   void Start()
   {
+    //initialization, should be pretty self-explanatory why everything is being grabbed
     loadingText = GameObject.Find("GameManager").GetComponent<TextMesh>();
     isFirst = PhotonNetwork.isMasterClient;
     seed = (int)PhotonNetwork.room.customProperties["seed"];
@@ -44,12 +47,7 @@ public class MapGeneration : Photon.MonoBehaviour
 
     loadingText.text = "generating map";
     loadState = 0;
-
     
-
-
-
-    //SpawnObjectAtPosition(new Point(0, 0), Resources.Load("GameLevel/BasicTile"));
   }
 
   void Update()
@@ -100,7 +98,7 @@ public class MapGeneration : Photon.MonoBehaviour
   }
 
 
-  void GenerateEdges()
+  void GenerateEdges() //generates walls around floor tiles that border uninitialized map tiles
   {
     int i = 0; int j = 0;
     for (i = 4; i < mapWidth - 4; i++) //looping through every item
@@ -129,7 +127,7 @@ public class MapGeneration : Photon.MonoBehaviour
   }
 
   //map gen:
-  void GenerateMapArray() //creates map array
+  void GenerateMapArray() //creates map array with borders
   {
   
     mapArray = new MapObject[mapHeight, mapWidth];
@@ -150,7 +148,7 @@ public class MapGeneration : Photon.MonoBehaviour
     
   }
 
-  void ForestMapGen()
+  void ForestMapGen() 
   {
     MapRoom startingMapRoom = CreateStartMapRoom(7, "StartMapRoom");
     startingMapRoom.roomNumber = 1;
@@ -172,7 +170,7 @@ public class MapGeneration : Photon.MonoBehaviour
     MapRoom newRoom = CreateRectangleRoom(Vec2(6, 5), "hubpotato");
     AttachRoomTo(0, 0, newRoom);
 
-    SetTileAt(Vec2(70, 23), Tile(4, 0, 0));
+    SetTileAt(Vec2(71, 23), Tile(4, 0, 0));
 
     /*
     int i = 0;

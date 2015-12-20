@@ -232,7 +232,7 @@ public class NetworkManager :Photon. MonoBehaviour
     Debug.Log(otherPlayer.name);
   }
 
-  //host migration
+  //host migration? removed for now since there was a more elegant solution
   void OnApplicationQuit()
   {
     /*

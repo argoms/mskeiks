@@ -11,16 +11,15 @@ public class DamageTextBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-    this.transform.Translate(Vector3.up * Time.deltaTime);
+    this.transform.Translate(Vector3.up * Time.deltaTime); //move straight upwards
 	}
 
-  IEnumerator DieAfterTime()
+  IEnumerator DieAfterTime() //kills self after the given time
   {
     yield return new WaitForSeconds(1f);
     if (PhotonNetwork.isMasterClient)
     {
       PhotonNetwork.Destroy(this.gameObject);
     }
-    //PhotonNetwork.Destroy(this.gameObject);
   }
 }
