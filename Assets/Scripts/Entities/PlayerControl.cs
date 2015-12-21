@@ -24,6 +24,7 @@ public class PlayerControl : Photon.MonoBehaviour
   private TextMesh healthText;
   public int health = 10;
   private PlayFabManager playManager;
+  public Vector2 movement;
 
   void Start()
   {
@@ -77,7 +78,7 @@ public class PlayerControl : Photon.MonoBehaviour
     transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
     
 
-    Vector2 movement = new Vector2(0,0);
+    movement = new Vector2(0,0);
     if (Input.GetKey(KeyCode.W))
     {
       movement.y += 1;
