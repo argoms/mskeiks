@@ -15,7 +15,6 @@ public class PlayerControl : Photon.MonoBehaviour
   private Vector3 syncEndPosition = Vector3.zero;
 
   private GameObject camera;
-  private bool attacking;
 
   public bool canMove;
 
@@ -28,13 +27,14 @@ public class PlayerControl : Photon.MonoBehaviour
 
   private Animator animator;
 
+  public bool isAttacking;
+
   void Start()
   {
     FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
     
 
     canMove = true;
-    attacking = false;
     rigidbody = GetComponent<Rigidbody2D>();
     transform = GetComponent<Transform>();
     camera = GameObject.Find("Camera");
@@ -49,8 +49,11 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void Update()
   {
-
+    Debug.Log(isAttacking);
     UpdateHUD();
+
+    //status updating
+    canMove = !isAttacking;
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
@@ -63,6 +66,7 @@ public class PlayerControl : Photon.MonoBehaviour
         PhotonNetwork.SendOutgoingCommands();
         //Attack();
       }
+      
       
     }
     else
@@ -154,7 +158,7 @@ public class PlayerControl : Photon.MonoBehaviour
   {
     //animation code goes here
     animator.Play("Attack1_1");
-
+    
     //create tracer:
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
     tracer.transform.parent = transform;
@@ -249,4 +253,6 @@ public class PlayerControl : Photon.MonoBehaviour
       }
     }
   }
+
+  
 }

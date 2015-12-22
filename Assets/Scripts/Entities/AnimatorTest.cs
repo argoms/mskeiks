@@ -5,7 +5,7 @@ public class AnimatorTest : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-    Animator anim = this.GetComponent<Animator>();
+    Animator anim = GetComponent<Animator>();
     anim.Play("Idle");
     //Debug.Log(anim.);
 	}
