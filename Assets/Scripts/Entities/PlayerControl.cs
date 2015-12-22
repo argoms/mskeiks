@@ -26,6 +26,8 @@ public class PlayerControl : Photon.MonoBehaviour
   private PlayFabManager playManager;
   public Vector2 movement;
 
+  private Animator animator;
+
   void Start()
   {
     FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
@@ -36,9 +38,13 @@ public class PlayerControl : Photon.MonoBehaviour
     rigidbody = GetComponent<Rigidbody2D>();
     transform = GetComponent<Transform>();
     camera = GameObject.Find("Camera");
+ 
 
     healthText = transform.Find("HealthDisplay").gameObject.GetComponent<TextMesh>();
     playManager = Object.FindObjectOfType<PlayFabManager>();
+
+    animator = gameObject.GetComponentInChildren<Animator>();//this.GetComponent<Animator>();
+    animator.Play("Walk");
   }
 
   void Update()
@@ -102,6 +108,14 @@ public class PlayerControl : Photon.MonoBehaviour
     if (canMove)
     {
       rigidbody.AddForce(movement * speed * Time.deltaTime);
+      if (movement == Vector2.zero)
+      {
+        //animator.Play("Idle");
+      }
+      else
+      {
+        animator.Play("Walk");
+      }
     }
   }
 
@@ -139,6 +153,7 @@ public class PlayerControl : Photon.MonoBehaviour
   void Attack()
   {
     //animation code goes here
+    animator.Play("Attack1_1");
 
     //create tracer:
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
