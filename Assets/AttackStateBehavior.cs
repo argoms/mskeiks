@@ -4,11 +4,14 @@ using System.Collections;
 
 public class AttackStateBehavior : StateMachineBehaviour {
   public PlayerControl control;
+  float lifetime;
+
   // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
   override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {
     control = animator.gameObject.GetComponentInParent<PlayerControl>();
-    control.isAttacking = true; 
+    //control.isAttacking = true;
+    control.attackCooldown = 0.25f; //arbitrary number atm
   }
 
   // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -19,8 +22,8 @@ public class AttackStateBehavior : StateMachineBehaviour {
   // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
   override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {
-    control = animator.gameObject.GetComponentInParent<PlayerControl>();
-    control.isAttacking = false;
+    //control = animator.gameObject.GetComponentInParent<PlayerControl>();
+    //control.isAttacking = false;
   
   }
 

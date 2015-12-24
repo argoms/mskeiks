@@ -26,8 +26,8 @@ public class PlayerControl : Photon.MonoBehaviour
   public Vector2 movement;
 
   private Animator animator;
-
-  public bool isAttacking;
+  public float attackCooldown;
+  //public bool isAttacking;
 
   void Start()
   {
@@ -49,18 +49,19 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void Update()
   {
-    Debug.Log(isAttacking);
+    //Debug.Log(isAttacking);
     UpdateHUD();
 
+    attackCooldown -= Time.deltaTime;
     //status updating
-    canMove = !isAttacking;
+    canMove = !(attackCooldown > 0);
     //Debug.Log(PhotonNetwork.GetPing());
     if (photonView.isMine)
     {
 
       camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -12); //camera follows player default -12, -30 for more zoom
       InputMovement();
-      if (Input.GetMouseButtonDown(0))
+      if (Input.GetMouseButtonDown(0) && attackCooldown < 0)
       {
         photonView.RPC("Attack", PhotonTargets.All);
         PhotonNetwork.SendOutgoingCommands();
@@ -114,7 +115,7 @@ public class PlayerControl : Photon.MonoBehaviour
       rigidbody.AddForce(movement * speed * Time.deltaTime);
       if (movement == Vector2.zero)
       {
-        //animator.Play("Idle");
+        animator.Play("Idle");
       }
       else
       {
