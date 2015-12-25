@@ -35,6 +35,8 @@ public class PlayerControl : Photon.MonoBehaviour
   private Transform upperTorso;
   //public bool isAttacking;
 
+  private float lastRotation;
+
   void Start()
   {
     FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
@@ -123,7 +125,7 @@ public class PlayerControl : Photon.MonoBehaviour
       Vector3 mousePos = Input.mousePosition;
       mousePos.z = 12;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-      transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+      //transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
      
       Debug.Log(upperTorso);
       if (movement == Vector2.zero)
@@ -148,6 +150,7 @@ public class PlayerControl : Photon.MonoBehaviour
   {
     if (movement != Vector2.zero)
     {
+      lowerTorso.Rotate(Mathf.Atan2(movement.y, movement.x) * 180/Mathf.PI - 90, 0, 0);
       //lowerTorso.localRotation = Quaternion.LookRotation(lowerTorso.worldToLocalMatrix * movement, lowerTorso.right * -1);
       //lowerTorso.rotation = Quaternion.LookRotation(lowerTorso.right * -1, lowerTorso.worldToLocalMatrix * movement);
       //lowerTorso.rot//Rotate(0, 0, 90);
