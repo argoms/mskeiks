@@ -60,7 +60,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
             attackType = 1;
             //Debug.Log("winding up attack");
             control.movement = Vector2.zero;
-            attackDirection = transform.rotation * Vector3.Normalize(target.transform.position - this.transform.position);
+            attackDirection = transform.rotation * Vector3.Normalize(target.transform.position - transform.position); //in retrospect I genuinely don't understand the math going on here, why is transform.rotation even neeeded?
           } 
 
           control.movement = Vector3.Normalize(target.transform.position - this.transform.position); //set movement direction for control behavior

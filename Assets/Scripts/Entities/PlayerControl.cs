@@ -27,6 +27,12 @@ public class PlayerControl : Photon.MonoBehaviour
 
   private Animator animator;
   public float attackCooldown;
+
+  [SerializeField]
+  private Transform lowerTorso;
+
+  [SerializeField]
+  private Transform upperTorso;
   //public bool isAttacking;
 
   void Start()
@@ -83,10 +89,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void InputMovement()
   {
-    Vector3 mousePos = Input.mousePosition;
-    mousePos.z = 12;
-    mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-    transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+    
     
 
     movement = new Vector2(0,0);
@@ -113,17 +116,44 @@ public class PlayerControl : Photon.MonoBehaviour
     if (canMove)
     {
       rigidbody.AddForce(movement * speed * Time.deltaTime);
+      //animator.SetFloat("moveX", movement.x);
+      //animator.SetFloat("moveY", movement.y);
+
+
+      Vector3 mousePos = Input.mousePosition;
+      mousePos.z = 12;
+      mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+      transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+     
+      Debug.Log(upperTorso);
       if (movement == Vector2.zero)
       {
-        animator.Play("Idle");
+        //animator.Play("Idle");
+        animator.SetBool("walking", false);
       }
       else
       {
-        animator.Play("Walk");
+        //animator.Play("Walk");
+        animator.SetBool("walking", true);
+        
       }
+
+
     }
+
+    
   }
 
+  void LateUpdate()
+  {
+    if (movement != Vector2.zero)
+    {
+      //lowerTorso.localRotation = Quaternion.LookRotation(lowerTorso.worldToLocalMatrix * movement, lowerTorso.right * -1);
+      //lowerTorso.rotation = Quaternion.LookRotation(lowerTorso.right * -1, lowerTorso.worldToLocalMatrix * movement);
+      //lowerTorso.rot//Rotate(0, 0, 90);
+    }
+    
+  }
   void OnMouseDown()
   {
     if (photonView.isMine)
@@ -159,7 +189,9 @@ public class PlayerControl : Photon.MonoBehaviour
   {
     //animation code goes here
     animator.Play("Attack1_1");
-    
+
+    //step:
+    DelayedStep(0, 500);
     //create tracer:
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
     tracer.transform.parent = transform;
@@ -255,5 +287,22 @@ public class PlayerControl : Photon.MonoBehaviour
     }
   }
 
-  
+  void DelayedStep(float delayTime, float magnitude)
+  {
+    if (delayTime != 0)
+    {
+      StartCoroutine(ImpulseAfterTime(delayTime, magnitude));
+    }
+    else
+    {
+      rigidbody.AddForce(transform.rotation * Vector3.up * magnitude);
+    }
+  }
+
+  IEnumerator ImpulseAfterTime(float delayTime, float magnitude)
+  {
+    yield return new WaitForSeconds(delayTime);
+    rigidbody.AddForce(transform.rotation * Vector3.up * magnitude);
+    //control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 100);
+  }
 }

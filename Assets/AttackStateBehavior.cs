@@ -4,7 +4,7 @@ using System.Collections;
 
 public class AttackStateBehavior : StateMachineBehaviour {
   public PlayerControl control;
-  float lifetime;
+  public float lifetime;
 
   // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
   override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
