@@ -164,7 +164,9 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       lastRotation = (Mathf.Atan2(movement.y, movement.x) * 180 / Mathf.PI - 90) + Quaternion.Angle(Quaternion.identity, transform.rotation);
       //lowerTorso.Rotate(Mathf.Atan2(movement.y, movement.x) * 180/Mathf.PI - 90, 0, 0);
-      
+
+      lowerTorso.Rotate(lastRotation, 0, 0);
+      upperTorso.Rotate(lastRotation * -1, 0, 0);
       //leftLeg.Rotate(lastRotation, 0, 0);
       //rightLeg.Rotate(lastRotation, 0, 0);
       //leftLowerLeg.Rotate(lastRotation, 0, 0);
