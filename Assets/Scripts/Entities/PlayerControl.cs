@@ -33,6 +33,18 @@ public class PlayerControl : Photon.MonoBehaviour
 
   [SerializeField]
   private Transform upperTorso;
+
+  [SerializeField]
+  private Transform leftLeg;
+
+  [SerializeField]
+  private Transform rightLeg;
+
+  [SerializeField]
+  private Transform leftLowerLeg;
+
+  [SerializeField]
+  private Transform rightLowerLeg;
   //public bool isAttacking;
 
   private float lastRotation;
@@ -125,9 +137,9 @@ public class PlayerControl : Photon.MonoBehaviour
       Vector3 mousePos = Input.mousePosition;
       mousePos.z = 12;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-      //transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+      transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
      
-      Debug.Log(upperTorso);
+      //Debug.Log(upperTorso);
       if (movement == Vector2.zero)
       {
         //animator.Play("Idle");
@@ -150,7 +162,13 @@ public class PlayerControl : Photon.MonoBehaviour
   {
     if (movement != Vector2.zero)
     {
-      lowerTorso.Rotate(Mathf.Atan2(movement.y, movement.x) * 180/Mathf.PI - 90, 0, 0);
+      lastRotation = (Mathf.Atan2(movement.y, movement.x) * 180 / Mathf.PI - 90) + Quaternion.Angle(Quaternion.identity, transform.rotation);
+      //lowerTorso.Rotate(Mathf.Atan2(movement.y, movement.x) * 180/Mathf.PI - 90, 0, 0);
+      
+      //leftLeg.Rotate(lastRotation, 0, 0);
+      //rightLeg.Rotate(lastRotation, 0, 0);
+      //leftLowerLeg.Rotate(lastRotation, 0, 0);
+      //rightLowerLeg.Rotate(lastRotation, 0, 0);
       //lowerTorso.localRotation = Quaternion.LookRotation(lowerTorso.worldToLocalMatrix * movement, lowerTorso.right * -1);
       //lowerTorso.rotation = Quaternion.LookRotation(lowerTorso.right * -1, lowerTorso.worldToLocalMatrix * movement);
       //lowerTorso.rot//Rotate(0, 0, 90);

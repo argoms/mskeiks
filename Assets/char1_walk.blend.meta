@@ -23,6 +23,8 @@ ModelImporter:
     100030: Upperarm_R
     100032: Body
     100034: Sword
+    100036: Body_001
+    100038: Helmet
     400000: armature
     400002: //RootNode
     400004: Chest
@@ -41,18 +43,25 @@ ModelImporter:
     400030: Upperarm_R
     400032: Body
     400034: Sword
+    400036: Body_001
+    400038: Helmet
     4300000: Cube_002
     4300002: Sword
     4300004: Body
+    4300006: Body_001
+    4300008: Helmet
     7400000: Attack1_1
     7400002: Walk
     7400004: Walk0
     7400006: Idle
     7400008: Attack1_10
+    7400010: Idle0
     9500000: //RootNode
     13700000: Cube_002
     13700002: Body
     13700004: Sword
+    13700006: Body_001
+    13700008: Helmet
   materials:
     importMaterials: 0
     materialName: 0
@@ -75,10 +84,10 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Attack1_10
-      takeName: Attack1_1
+      name: Idle0
+      takeName: Idle
       firstFrame: 0
-      lastFrame: 6
+      lastFrame: 1
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -130,6 +139,8 @@ ModelImporter:
       - path: armature/Stomach/Upperarm_R/Forearm_R/Hand_R
         weight: 1
       - path: Body
+        weight: 1
+      - path: Helmet
         weight: 1
       - path: Sword
         weight: 1
