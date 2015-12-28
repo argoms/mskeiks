@@ -28,15 +28,19 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   public float lungeDist = 3;
 
   private Vector3 attackDirection;
+  private Animator animator;
 
-	void Start ()
+  void Start ()
   {
     //initialize vars/find components to reference later
     control = GetComponent<EnemyControl>();
     level = control.level;
     levelManager = level.GetComponent<LevelManager>();
     awake = true;
-	}
+
+    animator = gameObject.GetComponentInChildren<Animator>();
+    animator.SetBool("walking", false);
+  }
 	
 	void Update ()
   {
@@ -52,25 +56,30 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         if (target != null)
         {
           awake = true; //wakes up upon finding target
+          
           if (DistToTargetSQ() < lungeDist * lungeDist)
           {
-
+            animator.SetTrigger("beginLunge");
             attackPhase = 1;
             timer = 1;
             attackType = 1;
             //Debug.Log("winding up attack");
             control.movement = Vector2.zero;
-            attackDirection = transform.rotation * Vector3.Normalize(target.transform.position - transform.position); //in retrospect I genuinely don't understand the math going on here, why is transform.rotation even neeeded?
-          } 
-
-          control.movement = Vector3.Normalize(target.transform.position - this.transform.position); //set movement direction for control behavior
+            attackDirection =  Vector3.Normalize(target.transform.position - transform.position); 
+          }
+          Vector3 movement = Vector3.Normalize(target.transform.position - this.transform.position);
+          control.movement = movement; //set movement direction for control behavior
+          animator.SetBool("walking", true);
+          transform.rotation = Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position);
           //control.movement = Vector2.up;
         }
         else
         {
           control.movement = Vector2.zero; //tell control to stop moving
+          animator.SetBool("walking", false);
         }
         break;
+
       case 1: //1: winding up attack
         control.movement = Vector2.zero;
         if (timer < 0)
@@ -80,22 +89,27 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.2f); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
           }
-          control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 800);
+          control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 1600);
           attackPhase = 2;
           timer = 0.2f;
+          animator.SetTrigger("pounce");
         }
         break;
+
       case 2: //2: attacking
         if (timer < 0)
         {
           attackPhase = 3;
           timer = 0.5f;
+          animator.SetTrigger("land");
         }
         break;
+
       case 3: //3: after attack cooldown period
         if (timer < 0)
         {
           attackPhase = 0;
+          animator.SetTrigger("attackCooled");
         }
         break;
     }

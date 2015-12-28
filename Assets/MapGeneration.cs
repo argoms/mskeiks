@@ -167,10 +167,10 @@ public class MapGeneration : Photon.MonoBehaviour
     startingMapRoom.roomNumber = 1;
     DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 3, 20));
 
-    MapRoom newRoom = CreateRectangleRoom(Vec2(6, 5), "hubpotato");
+    MapRoom newRoom = CreateRectangleRoom(Vec2(6, 5), "RegularMapRoom");
     AttachRoomTo(0, 0, newRoom);
 
-    SetTileAt(Vec2(71, 23), Tile(4, 0, 0));
+    SetTileAt(Vec2(70, 23), Tile(4, 0, 0));
 
     /*
     int i = 0;
