@@ -69,17 +69,19 @@ public class EnemyControl : Photon.MonoBehaviour
   }
 
   [PunRPC]
-  void Attack(Vector3 direction, float attackLifetime)
+  void Attack(Vector3 direction, float attackLifetime, string attackType)
   {
     //Debug.Log("lol");
     
     //animation code goes here
 
     //create tracer:
-    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * direction), Quaternion.LookRotation(Vector3.forward, direction));
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), Quaternion.LookRotation(Vector3.forward, direction));
     tracer.transform.parent = transform;
-    tracer.GetComponent<AttackTracerBehavior>().lifetime = attackLifetime;
-    tracer.GetComponent<AttackTracerBehavior>().friendly = false;
+    AttackTracerBehavior behavior = tracer.GetComponent<AttackTracerBehavior>();
+    behavior.lifetime = attackLifetime;
+    behavior.friendly = false;
+    behavior.SetTracer(attackType);
 
     PhotonNetwork.SendOutgoingCommands();
   }

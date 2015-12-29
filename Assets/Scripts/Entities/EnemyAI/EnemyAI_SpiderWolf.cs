@@ -86,10 +86,12 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           if (control.photonView.isMine)
           {
-            control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.2f); //tells control to attack on all clients
+            control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.7f, "SpiderWolf_Pounce"); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
+            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 2400);
           }
-          control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 1600);
+          
+          control.GetComponent<Rigidbody2D>().drag = 8f;
           attackPhase = 2;
           timer = 0.2f;
           animator.SetTrigger("pounce");
@@ -102,6 +104,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           attackPhase = 3;
           timer = 0.5f;
           animator.SetTrigger("land");
+          control.GetComponent<Rigidbody2D>().drag = 16f;
         }
         break;
 
@@ -116,6 +119,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
 
   }
 
+  /*
   void FixedUpdate()
   {
     if (attackPhase == 2)
@@ -125,7 +129,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 100); //adds a bit more velocity non-instantaneously, allowing for a longer 'leap' with slower starting speed
       }
     }
-  }
+  }*/
 
   GameObject FindClosestPlayer(float maxDist) //returns closest player, maxDist defines furthest away that a player will be recognized
   {

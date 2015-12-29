@@ -29,6 +29,7 @@ public class PlayFabManager : MonoBehaviour {
 
   ProjectDelegates.PlayFabLoginCallback OnLoginCompletedCallback;
 
+  private LoginMenuBehavior loginScreen;
   void Awake () {
 		PlayFabSettings.TitleId = TitleId;
 	}
@@ -76,10 +77,10 @@ public class PlayFabManager : MonoBehaviour {
 		Debug.Log(callStatus);
 	}
 
-  public void Login(string username, string password)
+  public void Login(string username, string password, LoginMenuBehavior screen)
   {
     //this.OnLoginCompletedCallback = OnLoginCompletedCallback;
-
+    loginScreen = screen;
     PlayFabSettings.TitleId = TitleId;
 
 
@@ -120,6 +121,7 @@ public class PlayFabManager : MonoBehaviour {
       Debug.Log("Error logging in player with custom ID:");
       Debug.Log(error.ErrorMessage);
     });*/
+
   }
   //public void CreateNewUser(string username, string password, string email, ProjectDelegates.PlayFabLoginCallback OnUserCreatedCallback)
   public void CreateNewUser(string username, string password, string email)
@@ -174,6 +176,7 @@ public class PlayFabManager : MonoBehaviour {
   {
     //Everything related to login completed. Time to go back to the manager.
     //OnLoginCompletedCallback(0, 0);
+    
 
   }
 
@@ -184,6 +187,8 @@ public class PlayFabManager : MonoBehaviour {
 
   void OnLoginCompleted(LoginResult result)
   {
+    Debug.Log("Logged in successfully");
+    loginScreen.SuccessfulLogin();
     //Debug.Log(playerDisplayName);
     playerID = result.PlayFabId;
 

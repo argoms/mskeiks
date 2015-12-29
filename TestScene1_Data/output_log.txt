@@ -1,3 +1,10 @@
+Mono path[0] = 'C:/NotDigiPen/mskeiks/five/mskeiks/TestScene1_Data/Managed'
+Mono path[1] = 'C:/NotDigiPen/mskeiks/five/mskeiks/TestScene1_Data/Mono'
+Mono config path = 'C:/NotDigiPen/mskeiks/five/mskeiks/TestScene1_Data/Mono/etc'
+PlayerConnection initialized from C:/NotDigiPen/mskeiks/five/mskeiks/TestScene1_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55006
+Multi-casting "[IP] 10.0.0.30 [Port] 55006 [Flags] 2 [Guid] 3653522316 [EditorId] 90330725 [Version] 1048832 [Id] WindowsPlayer(Sager) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [10.0.0.30:55006]
 Initialize engine version: 5.3.0f4 (2524e04062b4)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -6,129 +13,176 @@ Direct3D:
     Vendor:   NVIDIA
     VRAM:     3072 MB
 Begin MonoManager ReloadAssembly
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll (this message is harmless)
-Loading C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
-- Completed reload, in  0.045 seconds
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\System.Core.dll (this message is harmless)
-Platform assembly: C:\NotDigiPen\mskeiks\attempt3\mskeiks\TestScene1_Data\Managed\System.dll (this message is harmless)
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll (this message is harmless)
+Loading C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\Photon3Unity3D.dll into Unity Child Domain
+- Completed reload, in  0.066 seconds
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\NotDigiPen\mskeiks\five\mskeiks\TestScene1_Data\Managed\System.dll (this message is harmless)
 desktop: 1920x1080 120Hz; virtual: 1920x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.571835 ms
+UnloadTime: 0.740820 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 6e88 -> priority: 1 
-  Thread -> id: 6db0 -> priority: 1 
-Loginworked
+  Thread -> id: 60b0 -> priority: 1 
+  Thread -> id: b364 -> priority: 1 
+Logged in successfully
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+PlayFabManager:OnLoginCompleted(LoginResult) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\PlayFabManager.cs:190)
+PlayFab.<LoginWithPlayFab>c__AnonStorey3E:<>m__5D(String, PlayFabError) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\PlayFabSDK\Public\PlayFabClientAPI.cs:449)
+PlayFab.Internal.<MakeRequestViaUnity>c__Iterator4:MoveNext() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\PlayFabSDK\Internal\PlayFabHTTP.cs:252)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/PlayFabManager.cs Line: 190)
+
+Best region found in PlayerPrefs. Connecting to: us
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+PhotonNetwork:ConnectToBestCloudServer(String) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonNetwork.cs:1351)
+PhotonNetwork:ConnectUsingSettings(String) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonNetwork.cs:1250)
+NetworkManager:Start() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:28)
+ 
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/Photon Unity Networking/Plugins/PhotonNetwork/PhotonNetwork.cs Line: 1351)
 
 Joined Lobby
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnJoinedLobby() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:152)
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[]) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:2103)
+NetworkingPeer:OnOperationResponse(OperationResponse) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1404)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:125)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 152)
 
-Room list was updated (1 rooms)
+Room list was updated (0 rooms)
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnReceivedRoomListUpdate() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:142)
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[]) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:2103)
+NetworkingPeer:OnEvent(EventData) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1841)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:125)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-room0:hub0|{map=0}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Room list was updated (1 rooms)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-room0:hub0|{map=0}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Connected to Room
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-generating map with seed 0 as client
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-beginning mapgen
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Disconnected from room
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Joined Lobby
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-joining forest now
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-Room list was updated (1 rooms)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-room0:hub0|{map=0}
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 142)
 
 Connected to Room
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnJoinedRoom() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:215)
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[]) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:2103)
+NetworkingPeer:OnEvent(EventData) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1904)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:125)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 215)
 
-generating map with seed 22 as master
+generating map with seed 0 as master
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+MapGeneration:Start() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\MapGeneration.cs:46)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/MapGeneration.cs Line: 46)
 
 beginning mapgen
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+MapGeneration:Update() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\MapGeneration.cs:61)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/MapGeneration.cs Line: 61)
 
 
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnPhotonPlayerConnected(PhotonPlayer) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:228)
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[]) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:2103)
+NetworkingPeer:OnEvent(EventData) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1909)
+ExitGames.Client.Photon.PeerBase:DeserializeMessageAndCallback(Byte[])
+ExitGames.Client.Photon.EnetPeer:DispatchIncomingCommands()
+ExitGames.Client.Photon.PhotonPeer:DispatchIncomingCommands()
+PhotonHandler:Update() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:125)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 228)
 
 NullReferenceException: Object reference not set to an instance of an object
-  at PlayerControl.OnPhotonSerializeView (.PhotonStream stream, .PhotonMessageInfo info) [0x00000] in <filename unknown>:0 
+  at PlayerControl.OnPhotonSerializeView (.PhotonStream stream, .PhotonMessageInfo info) [0x000ec] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Scripts\Entities\PlayerControl.cs:289 
   at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (object,object[],System.Exception&)
-  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00000] in <filename unknown>:0 
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x000c0] in /Users/builduser/buildslave/mono-runtime-and-classlibs/build/mcs/class/corlib/System.Reflection/MonoMethod.cs:222 
 Rethrow as TargetInvocationException: Exception has been thrown by the target of an invocation.
-  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00000] in <filename unknown>:0 
-  at System.Reflection.MethodBase.Invoke (System.Object obj, System.Object[] parameters) [0x00000] in <filename unknown>:0 
-  at PhotonView.ExecuteComponentOnSerialize (UnityEngine.Component component, .PhotonStream stream, .PhotonMessageInfo info) [0x00000] in <filename unknown>:0 
-  at PhotonView.DeserializeComponent (UnityEngine.Component component, .PhotonStream stream, .PhotonMessageInfo info) [0x00000] in <filename unknown>:0 
-  at PhotonView.DeserializeView (.PhotonStream stream, .PhotonMessageInfo info) [0x00000] in <filename unknown>:0 
-  at NetworkingPeer.OnSerializeRead (ExitGames.Client.Photon.Hashtable data, .PhotonPlayer sender, Int32 networkTime, Int16 correctPrefix) [0x00000] in <filename unknown>:0 
-  at NetworkingPeer.OnEvent (ExitGames.Client.Photon.EventData photonEvent) [0x00000] in <filename unknown>:0 
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x000e3] in /Users/builduser/buildslave/mono-runtime-and-classlibs/build/mcs/class/corlib/System.Reflection/MonoMethod.cs:232 
+  at System.Reflection.MethodBase.Invoke (System.Object obj, System.Object[] parameters) [0x00000] in /Users/builduser/buildslave/mono-runtime-and-classlibs/build/mcs/class/corlib/System.Reflection/MethodBase.cs:115 
+  at PhotonView.ExecuteComponentOnSerialize (UnityEngine.Component component, .PhotonStream stream, .PhotonMessageInfo info) [0x00079] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonView.cs:524 
+  at PhotonView.DeserializeComponent (UnityEngine.Component component, .PhotonStream stream, .PhotonMessageInfo info) [0x00018] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonView.cs:355 
+  at PhotonView.DeserializeView (.PhotonStream stream, .PhotonMessageInfo info) [0x00031] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonView.cs:340 
+  at NetworkingPeer.OnSerializeRead (ExitGames.Client.Photon.Hashtable data, .PhotonPlayer sender, Int32 networkTime, Int16 correctPrefix) [0x001f1] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:3597 
+  at NetworkingPeer.OnEvent (ExitGames.Client.Photon.EventData photonEvent) [0x006d9] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1955 
   at ExitGames.Client.Photon.PeerBase.DeserializeMessageAndCallback (System.Byte[] inBuff) [0x00000] in <filename unknown>:0 
   at ExitGames.Client.Photon.EnetPeer.DispatchIncomingCommands () [0x00000] in <filename unknown>:0 
   at ExitGames.Client.Photon.PhotonPeer.DispatchIncomingCommands () [0x00000] in <filename unknown>:0 
-  at PhotonHandler.Update () [0x00000] in <filename unknown>:0 
+  at PhotonHandler.Update () [0x00053] in C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:125 
  
-(Filename:  Line: -1)
-
-
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-i ded
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: /Users/builduser/buildslave/mono-runtime-and-classlibs/build/mcs/class/corlib/System.Reflection/MonoMethod.cs Line: 222)
 
 Disconnected from room
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnLeftRoom() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:223)
+UnityEngine.GameObject:SendMessage(String, Object, SendMessageOptions)
+NetworkingPeer:SendMonoMessage(PhotonNetworkingMessage, Object[]) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:2103)
+NetworkingPeer:LeftRoomCleanup() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:545)
+NetworkingPeer:OnStatusChanged(StatusCode) (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:1619)
+ExitGames.Client.Photon.EnetPeer:Disconnect()
+ExitGames.Client.Photon.PhotonPeer:Disconnect()
+NetworkingPeer:Disconnect() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\NetworkingPeer.cs:467)
+PhotonNetwork:Disconnect() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonNetwork.cs:1485)
+PhotonHandler:OnApplicationQuit() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\Photon Unity Networking\Plugins\PhotonNetwork\PhotonHandler.cs:60)
  
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 223)
+
+i ded
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+NetworkManager:OnApplicationQuit() (at C:\NotDigiPen\mskeiks\five\mskeiks\Assets\NetworkManager.cs:256)
+ 
+(Filename: C:/NotDigiPen/mskeiks/five/mskeiks/Assets/NetworkManager.cs Line: 256)
 

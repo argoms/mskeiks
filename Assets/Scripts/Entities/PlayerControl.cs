@@ -49,6 +49,9 @@ public class PlayerControl : Photon.MonoBehaviour
 
   private float lastRotation;
 
+  private bool zoomOut; //DEBUG
+
+  private Vector2 syncVelocity;
   void Start()
   {
     FindObjectOfType<LevelManager>().UpdateList(); //update playerlist when a player connects
@@ -79,7 +82,7 @@ public class PlayerControl : Photon.MonoBehaviour
     if (photonView.isMine)
     {
 
-      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, -12); //camera follows player default -12, -30 for more zoom
+      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, zoomOut ? -120 : -12); //camera follows player default -12, -30 for more zoom
       InputMovement();
       if (Input.GetMouseButtonDown(0) && attackCooldown < 0)
       {
@@ -103,7 +106,10 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void InputMovement()
   {
-    
+    if (Input.GetKeyDown(KeyCode.Q)) //DEBUG FOR ZOOMING MAP OUT
+    {
+      zoomOut = !zoomOut;
+    }
     
 
     movement = new Vector2(0,0);
@@ -138,7 +144,7 @@ public class PlayerControl : Photon.MonoBehaviour
       mousePos.z = 12;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
       transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
-     
+
       //Debug.Log(upperTorso);
       if (movement == Vector2.zero)
       {
@@ -149,7 +155,7 @@ public class PlayerControl : Photon.MonoBehaviour
       {
         //animator.Play("Walk");
         animator.SetBool("walking", true);
-        
+
       }
 
 
@@ -214,10 +220,14 @@ public class PlayerControl : Photon.MonoBehaviour
     animator.Play("Attack1_1");
 
     //step:
-    DelayedStep(0, 500);
+    if (photonView.isMine)
+    {
+      DelayedStep(0, 500);
+    }
     //create tracer:
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
     tracer.transform.parent = transform;
+    tracer.GetComponent<AttackTracerBehavior>().SetTracer("PlayerSword1_1");
     /*
     if (PhotonNetwork.isMasterClient)
     {
@@ -232,6 +242,8 @@ public class PlayerControl : Photon.MonoBehaviour
     rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
     
     transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
+
+    animator.SetBool("walking", (syncVelocity.magnitude > 0.1) );
 
   }
 
@@ -253,7 +265,7 @@ public class PlayerControl : Photon.MonoBehaviour
       syncPosition = (Vector2)stream.ReceiveNext();
 
       //velocity
-      Vector2 syncVelocity;
+      
       syncVelocity = (Vector2)stream.ReceiveNext();
 
       //syncEndPosition = (Vector2)stream.ReceiveNext();

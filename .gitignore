@@ -70,3 +70,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+TestScene1.exe
+player_win_development_x86.pdb
+player_win_development_x86_s.pdb

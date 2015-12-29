@@ -85,7 +85,7 @@ public class MapGeneration : Photon.MonoBehaviour
       case 9:
         SpawnMap();
         loadingText.text = "load complete";
-        GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity, 0);
+        //GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3(0, 0, 0), Quaternion.identity, 0);
         //PhotonNetwork.room.SetCustomProperties(new ExitGames.Client.Photon.Hashtable() { { "plist", (ArrayList)(PhotonNetwork.room.customProperties["plist"]).Add(1) } });
         //PlayerScore.SetPlayerScore.SetCustomProperties( new ExitGames.Client.Photon.Hashtable(){ { "Deaths", (int)PlayerScore.customProperties["Deaths"]+1 } } )
         //this.GetComponent<LevelManager>().playerList.Add(newPlayer);
@@ -153,6 +153,7 @@ public class MapGeneration : Photon.MonoBehaviour
     MapRoom startingMapRoom = CreateStartMapRoom(7, "StartMapRoom");
     startingMapRoom.roomNumber = 1;
     DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 3, 20));
+    SetTileAt(Vec2(65, 23), Tile(-2, 0, 0));
 
     int i = 0;
     while (i++ < 5)
@@ -171,6 +172,7 @@ public class MapGeneration : Photon.MonoBehaviour
     AttachRoomTo(0, 0, newRoom);
 
     SetTileAt(Vec2(70, 23), Tile(4, 0, 0));
+    SetTileAt(Vec2(65, 23), Tile(-2, 0, 0));
 
     /*
     int i = 0;
@@ -290,7 +292,7 @@ public class MapGeneration : Photon.MonoBehaviour
     
     while (!reallyDone)
     {
-      MapRoom nextMapRoom = CreateSquareMapRoom(Random.Range(2, 5) * 2 + 1, "RegularMapRoom");
+      MapRoom nextMapRoom = CreateSquareMapRoom(Random.Range(4, 8) * 2 + 1, "RegularMapRoom");
       //Debug.Log(Random.Range(2, 5));
       MapRoom currentMapRoom = (MapRoom)rooms[index];
       int randomDoor = 0;
@@ -434,6 +436,10 @@ public class MapGeneration : Photon.MonoBehaviour
                 newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
               }
             }
+            break;
+
+          case -2:
+            GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
             break;
           case 3: //debug fallthroguh
             tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
