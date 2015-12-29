@@ -30,6 +30,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   private Vector3 attackDirection;
   private Animator animator;
 
+  private float skittering;
   void Start ()
   {
     //initialize vars/find components to reference later
@@ -40,18 +41,20 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
 
     animator = gameObject.GetComponentInChildren<Animator>();
     animator.SetBool("walking", false);
+    skittering = 1;
   }
 	
 	void Update ()
   {
     timer -= Time.deltaTime;
+    skittering -= Time.deltaTime;
     switch(attackPhase)
     {
       case 0: //0: not attacking
         if (timer < 0) //does this every second 
         {
           timer = 1;
-          target = FindClosestPlayer(awake ? 8 : 4); //search for a nearby player, distance to search depends on whether or not awake
+          target = FindClosestPlayer(awake ? 16 : 4); //search for a nearby player, distance to search depends on whether or not awake
         }
         if (target != null)
         {
@@ -67,9 +70,23 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
             control.movement = Vector2.zero;
             attackDirection =  Vector3.Normalize(target.transform.position - transform.position); 
           }
-          Vector3 movement = Vector3.Normalize(target.transform.position - this.transform.position);
-          control.movement = movement; //set movement direction for control behavior
-          animator.SetBool("walking", true);
+
+          if (skittering > 0)
+          {
+            Vector3 movement = Vector3.Normalize(target.transform.position - this.transform.position);
+            control.movement = movement; //set movement direction for control behavior
+            animator.SetBool("walking", true);
+
+          }
+          else
+          {
+            control.movement = Vector2.zero; //tell control to stop moving
+            animator.SetBool("walking", false);
+            if (skittering < -0.5f)
+            {
+              skittering = 0.5f;
+            }
+          }
           transform.rotation = Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position);
           //control.movement = Vector2.up;
         }
@@ -104,7 +121,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           attackPhase = 3;
           timer = 0.5f;
           animator.SetTrigger("land");
-          control.GetComponent<Rigidbody2D>().drag = 16f;
+          
         }
         break;
 
@@ -113,6 +130,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           attackPhase = 0;
           animator.SetTrigger("attackCooled");
+          control.GetComponent<Rigidbody2D>().drag = 16f;
         }
         break;
     }

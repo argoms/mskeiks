@@ -59,6 +59,7 @@ ModelImporter:
     7400006: Pounce
     7400008: PounceLand
     7400010: Walk
+    7400012: Walk0
     9500000: //RootNode
     13700000: Cube_002
     13700002: Sphere_001
@@ -86,9 +87,9 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: Default Take
-      takeName: Default Take
-      firstFrame: 0
+      name: Walk0
+      takeName: Walk
+      firstFrame: -1
       lastFrame: 14
       wrapMode: 0
       orientationOffsetY: 0
@@ -96,8 +97,8 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
+      loopTime: 1
+      loopBlend: 1
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
