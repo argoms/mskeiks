@@ -2,7 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof(EnemyControl))]
-public class EnemyAI_SpiderWolf : MonoBehaviour {
+public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
 
   private GameObject level; //level object (containing tile objects as children & levelmanager component)
   private EnemyControl control; //base control behavior
@@ -63,61 +63,79 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           awake = true; //wakes up upon finding target
           
-          if (DistToTargetSQ() < lungeDist * lungeDist && skittering < 0.3)
+          if (DistToTargetSQ() < lungeDist * lungeDist && skittering < 0.45)
           {
-            animator.SetTrigger("beginLunge");
-            attackPhase = 1;
-            timer = 0.66f;
-            attackType = 1;
-            //Debug.Log("winding up attack");
-            control.movement = Vector2.zero;
-            attackDirection =  Vector3.Normalize(target.transform.position - transform.position); 
+            if (Turn(Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position)))
+            {
+              animator.SetTrigger("beginLunge");
+              attackPhase = 1;
+              timer = 1;
+              attackType = 1;
+              //Debug.Log("winding up attack");
+              control.movement = Vector2.zero;
+              attackDirection = Vector3.Normalize(target.transform.position - transform.position);
+            }
           }
 
           if (skittering > 0)
           {
-            Vector3 movement = Vector3.Normalize(target.transform.position - this.transform.position);
+            //Vector3 movement = Vector3.Normalize(target.transform.position - this.transform.position);
+            Turn(Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position));
+            Vector3 movement = control.transform.rotation * Vector3.up;
             control.movement = movement; //set movement direction for control behavior
             animator.SetBool("walking", true);
 
           }
           else
           {
-            control.movement = Vector2.zero; //tell control to stop moving
-            animator.SetBool("walking", false);
-            if (skittering < -0.5f && skittering > -0.7f)
+            if (DistToTargetSQ() < 9)
             {
-              Vector3 movement = Quaternion.Euler(0, 0, 90 * strafeDir) *  Vector3.Normalize(target.transform.position - this.transform.position);
-              control.movement = movement; //set movement direction for control behavior
-              animator.SetBool("walking", true);
-              
-              
-            }
-
-            if (skittering < -0.9f)
-            {
-              switch (SeededRandom(4))
+              control.movement = Vector2.zero; //tell control to stop moving
+              animator.SetBool("walking", false);
+              if (skittering < -0.5f && skittering > -0.7f)
               {
-                case 1:
-                  skittering = 0.5f;
-                  strafeDir *= -1;
-                  break;
+                //Vector3 movement = Quaternion.Euler(0, 0, 90 * strafeDir) *  Vector3.Normalize(target.transform.position - this.transform.position);
+                //control.movement = movement; //set movement direction for control behavior
 
-                case 2:
-                  skittering = -0.5f + SeededRandom(3) * 0.1f;
-                  strafeDir *= -1;
-                  break;
+                Turn(Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position));
+                Vector3 movement = Quaternion.Euler(0, 0, 90 * strafeDir) * control.transform.rotation * Vector3.up;
+                control.movement = movement; //set movement direction for control behavior
 
-                default:
-                case 3:
-                  skittering = -0.5f + SeededRandom(3) * 0.1f;
-                  strafeDir *= strafeDir * strafeDir > 0.5 ? -0.5f : 2;
-                  break;
+                animator.SetBool("walking", true);
+
+
               }
-              
+
+              if (skittering < -0.9f)
+              {
+                switch (SeededRandom(4))
+                {
+                  case 1:
+                    skittering = 0.5f;
+                    strafeDir *= -1;
+                    break;
+
+                  case 2:
+                    skittering = -0.5f + SeededRandom(3) * 0.1f;
+                    strafeDir *= -1;
+                    break;
+
+                  default:
+                  case 3:
+                    skittering = -0.5f + SeededRandom(3) * 0.1f;
+                    strafeDir *= strafeDir * strafeDir > 0.5 ? -0.5f : 2;
+                    break;
+                }
+
+              }
+            }
+            else
+            {
+              skittering = 0.3f;
             }
           }
-          transform.rotation = Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position);
+          //transform.rotation = Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position);
+          Turn(Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position));
           //control.movement = Vector2.up;
         }
         else
@@ -135,13 +153,15 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.7f, "SpiderWolf_Pounce"); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
-            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 1200);
+            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 4000);
           }
           
-          control.GetComponent<Rigidbody2D>().drag = 4f;
+          //control.GetComponent<Rigidbody2D>().drag = 4f;
           attackPhase = 2;
           timer = 0.2f;
+
           animator.SetTrigger("pounce");
+          //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "pounce");
         }
         break;
 
@@ -151,7 +171,7 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           attackPhase = 3;
           timer = 0.5f;
           animator.SetTrigger("land");
-          
+          //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "land");
         }
         break;
 
@@ -160,7 +180,8 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           attackPhase = 0;
           animator.SetTrigger("attackCooled");
-          control.GetComponent<Rigidbody2D>().drag = 16f;
+          //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "attackCooled");
+          //control.GetComponent<Rigidbody2D>().drag = 16f;
         }
         break;
     }
@@ -228,5 +249,19 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   {
     control.seed++;
     return ((control.seed % 10) + 1) * max / 10;
+  }
+
+  bool Turn(Quaternion newRot)
+  {
+    if (Quaternion.Angle(control.transform.rotation, newRot) > 5)
+    {
+      transform.rotation = Quaternion.Lerp(control.transform.rotation, newRot, Time.deltaTime * 3);
+      return false;
+    }
+    else
+    {
+      transform.rotation = newRot;
+      return true;
+    }
   }
 }
