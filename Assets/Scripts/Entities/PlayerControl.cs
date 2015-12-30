@@ -68,6 +68,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
     animator = gameObject.GetComponentInChildren<Animator>();//this.GetComponent<Animator>();
     animator.Play("Walk");
+    
   }
 
   void Update()
@@ -255,6 +256,7 @@ public class PlayerControl : Photon.MonoBehaviour
       stream.SendNext(rigidbody.velocity);
       stream.SendNext(transform.rotation);
       stream.SendNext(health);
+      
     }
     else
     {

@@ -434,6 +434,7 @@ public class MapGeneration : Photon.MonoBehaviour
                 //GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
                 GameObject newEnemy = PhotonNetwork.InstantiateSceneObject("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0, null);
                 newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
+                newEnemy.GetComponent<EnemyControl>().seed = Random.Range(0, 9);
               }
             }
             break;

@@ -28,6 +28,8 @@ public class EnemyControl : Photon.MonoBehaviour
 
   public GameObject level;
 
+  public int seed;
+
   void Start()
   {
     level = FindObjectOfType<MapGeneration>().gameObject;
@@ -35,6 +37,7 @@ public class EnemyControl : Photon.MonoBehaviour
     rigidbody = GetComponent<Rigidbody2D>();
     healthText = transform.Find("HealthDisplay").gameObject.GetComponent<TextMesh>();
   }
+
   void Update()
   {
     //Debug.Log(PhotonNetwork.GetPing());
@@ -134,6 +137,7 @@ public class EnemyControl : Photon.MonoBehaviour
       //sync timing
       syncTime = 0f;
       syncDelay = Time.time - lastSynchronizationTime;
+      Debug.Log(syncDelay);
       lastSynchronizationTime = Time.time;
 
 

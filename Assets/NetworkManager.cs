@@ -26,9 +26,11 @@ public class NetworkManager :Photon. MonoBehaviour
   void Start()
   {
     PhotonNetwork.ConnectUsingSettings(version);
+    PhotonNetwork.sendRate = 20;
+    PhotonNetwork.sendRateOnSerialize = 20;
     //PhotonNetwork.ConnectToBestCloudServer(version);
     //PhotonNetwork.ConnectToMaster("3.4.9.2931", 8088, "fed2732f-682e-45a2-947a-cd784755636a", version);
-      //50.170.122.211"
+    //50.170.122.211"
 
   }
 

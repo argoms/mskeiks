@@ -31,6 +31,8 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   private Animator animator;
 
   private float skittering;
+
+  private float strafeDir;
   void Start ()
   {
     //initialize vars/find components to reference later
@@ -41,7 +43,8 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
 
     animator = gameObject.GetComponentInChildren<Animator>();
     animator.SetBool("walking", false);
-    skittering = 1;
+    skittering = 0.5f;
+    strafeDir = 1;
   }
 	
 	void Update ()
@@ -60,11 +63,11 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
         {
           awake = true; //wakes up upon finding target
           
-          if (DistToTargetSQ() < lungeDist * lungeDist)
+          if (DistToTargetSQ() < lungeDist * lungeDist && skittering < 0.3)
           {
             animator.SetTrigger("beginLunge");
             attackPhase = 1;
-            timer = 1;
+            timer = 0.66f;
             attackType = 1;
             //Debug.Log("winding up attack");
             control.movement = Vector2.zero;
@@ -82,9 +85,36 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           {
             control.movement = Vector2.zero; //tell control to stop moving
             animator.SetBool("walking", false);
-            if (skittering < -0.5f)
+            if (skittering < -0.5f && skittering > -0.7f)
             {
-              skittering = 0.5f;
+              Vector3 movement = Quaternion.Euler(0, 0, 90 * strafeDir) *  Vector3.Normalize(target.transform.position - this.transform.position);
+              control.movement = movement; //set movement direction for control behavior
+              animator.SetBool("walking", true);
+              
+              
+            }
+
+            if (skittering < -0.9f)
+            {
+              switch (SeededRandom(4))
+              {
+                case 1:
+                  skittering = 0.5f;
+                  strafeDir *= -1;
+                  break;
+
+                case 2:
+                  skittering = -0.5f + SeededRandom(3) * 0.1f;
+                  strafeDir *= -1;
+                  break;
+
+                default:
+                case 3:
+                  skittering = -0.5f + SeededRandom(3) * 0.1f;
+                  strafeDir *= strafeDir * strafeDir > 0.5 ? -0.5f : 2;
+                  break;
+              }
+              
             }
           }
           transform.rotation = Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position);
@@ -105,10 +135,10 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
           {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.7f, "SpiderWolf_Pounce"); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
-            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 2400);
+            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 1200);
           }
           
-          control.GetComponent<Rigidbody2D>().drag = 8f;
+          control.GetComponent<Rigidbody2D>().drag = 4f;
           attackPhase = 2;
           timer = 0.2f;
           animator.SetTrigger("pounce");
@@ -192,5 +222,11 @@ public class EnemyAI_SpiderWolf : MonoBehaviour {
   float DistToTargetSQ() //shortcut for calling distance to target object
   {
     return DistanceSQ(this.transform.position.x - target.transform.position.x, this.transform.position.y - target.transform.position.y);
+  }
+
+  int SeededRandom(int max)
+  {
+    control.seed++;
+    return ((control.seed % 10) + 1) * max / 10;
   }
 }
