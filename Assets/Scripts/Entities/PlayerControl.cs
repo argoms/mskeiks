@@ -102,7 +102,7 @@ public class PlayerControl : Photon.MonoBehaviour
     if (photonView.isMine)
     {
 
-      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, zoomOut ? -120 : -12); //camera follows player default -12, -30 for more zoom
+      camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, zoomOut ? -120 : -6); //camera follows player default -12, -30 for more zoom
       InputMovement();
       if (Input.GetMouseButtonDown(0) && attackCooldown < 0)
       {
