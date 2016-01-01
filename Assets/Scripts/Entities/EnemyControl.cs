@@ -154,7 +154,7 @@ public class EnemyControl : Photon.MonoBehaviour
     //animation code goes here
 
     //create tracer:
-    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), Quaternion.LookRotation(Vector3.forward, direction));
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up * 0.5f), Quaternion.LookRotation(Vector3.forward, direction));
     tracer.transform.parent = transform;
     AttackTracerBehavior behavior = tracer.GetComponent<AttackTracerBehavior>();
     behavior.lifetime = attackLifetime;

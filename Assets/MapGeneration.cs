@@ -432,7 +432,7 @@ public class MapGeneration : Photon.MonoBehaviour
               if (isFirst)
               {
                 //GameObject newEnemy = PhotonNetwork.Instantiate("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
-                GameObject newEnemy = PhotonNetwork.InstantiateSceneObject("BasicEnemy", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0, null);
+                GameObject newEnemy = PhotonNetwork.InstantiateSceneObject("BasicEnemy", new Vector3((i + startingPoint.x), (j + startingPoint.y), 0), Quaternion.identity, 0, null);
                 newEnemy.GetComponent<EnemyControl>().level = this.gameObject;
                 newEnemy.GetComponent<EnemyControl>().seed = Random.Range(0, 9);
               }
@@ -440,7 +440,7 @@ public class MapGeneration : Photon.MonoBehaviour
             break;
 
           case -2:
-            GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3((i + startingPoint.x) * 2 - 1, (j + startingPoint.y) * 2 - 1, 0), Quaternion.identity, 0);
+            GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3((i + startingPoint.x), (j + startingPoint.y), 0), Quaternion.identity, 0);
             break;
           case 3: //debug fallthroguh
             tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
@@ -474,7 +474,9 @@ public class MapGeneration : Photon.MonoBehaviour
   GameObject SpawnObjectAtPosition(Point location, Object thing, float height)
   {
     //note that location is doubled in magnitude because tiles are 2x2 and not 1x1
-    Vector3 worldPosition = new Vector3(location.x * 2, location.y * 2, height);
+    //Vector3 worldPosition = new Vector3(location.x * 2, location.y * 2, height);
+
+    Vector3 worldPosition = new Vector3(location.x, location.y, height);
     return (GameObject)Instantiate(thing, worldPosition, Quaternion.identity);
   }
 

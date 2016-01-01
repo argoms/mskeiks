@@ -50,7 +50,7 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
 	void Update ()
   {
     timer -= Time.deltaTime;
-    skittering -= Time.deltaTime;
+    skittering -= Time.deltaTime / 2;
     switch(attackPhase)
     {
       case 0: //0: not attacking
@@ -153,10 +153,10 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
           {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.7f, "SpiderWolf_Pounce"); //tells control to attack on all clients
             PhotonNetwork.SendOutgoingCommands();
-            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 4000);
+            control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 400);
           }
           
-          //control.GetComponent<Rigidbody2D>().drag = 4f;
+          control.GetComponent<Rigidbody2D>().drag = 4f;
           attackPhase = 2;
           timer = 0.2f;
 
@@ -181,7 +181,7 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
           attackPhase = 0;
           animator.SetTrigger("attackCooled");
           //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "attackCooled");
-          //control.GetComponent<Rigidbody2D>().drag = 16f;
+          control.GetComponent<Rigidbody2D>().drag = 16f;
         }
         break;
     }
@@ -253,6 +253,7 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
 
   bool Turn(Quaternion newRot)
   {
+    animator.SetBool("walking", true);
     if (Quaternion.Angle(control.transform.rotation, newRot) > 5)
     {
       transform.rotation = Quaternion.Lerp(control.transform.rotation, newRot, Time.deltaTime * 3);

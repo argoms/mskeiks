@@ -163,7 +163,7 @@ public class PlayerControl : Photon.MonoBehaviour
       Vector3 mousePos = Input.mousePosition;
       mousePos.z = 12;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-      transform.rotation = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+      transform.rotation = Quaternion.LookRotation(Vector3.forward, (mousePos - transform.position) + Vector3.down * 2);
 
       //Debug.Log(upperTorso);
       if (movement == Vector2.zero)
@@ -242,10 +242,10 @@ public class PlayerControl : Photon.MonoBehaviour
     //step:
     if (photonView.isMine)
     {
-      DelayedStep(0, 500);
+      DelayedStep(0, 250);
     }
     //create tracer:
-    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up), transform.rotation);
+    GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up * 0.5f), transform.rotation);
     tracer.transform.parent = transform;
     tracer.GetComponent<AttackTracerBehavior>().SetTracer("PlayerSword1_1");
     /*
