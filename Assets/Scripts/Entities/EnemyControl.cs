@@ -169,6 +169,8 @@ public class EnemyControl : Photon.MonoBehaviour
   {
     Animator animator = gameObject.GetComponentInChildren<Animator>();
     animator.SetTrigger(anim);
+
+    PhotonNetwork.SendOutgoingCommands();
   }
 
   public void Hit(int damage) //called when entity is hit by an attack

@@ -68,6 +68,11 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
             if (Turn(Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position)))
             {
               animator.SetTrigger("beginLunge");
+              if (control.photonView.isMine)
+              {
+                control.photonView.RPC("AnimTrigger", PhotonTargets.All, "beginLunge");
+                
+              }
               attackPhase = 1;
               timer = 1;
               attackType = 1;
@@ -152,8 +157,10 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
           if (control.photonView.isMine)
           {
             control.photonView.RPC("Attack", PhotonTargets.All, attackDirection, 0.7f, "SpiderWolf_Pounce"); //tells control to attack on all clients
-            PhotonNetwork.SendOutgoingCommands();
+            
             control.GetComponent<Rigidbody2D>().AddForce(attackDirection * 400);
+            control.photonView.RPC("AnimTrigger", PhotonTargets.All, "pounce");
+            PhotonNetwork.SendOutgoingCommands();
           }
           
           control.GetComponent<Rigidbody2D>().drag = 4f;
@@ -161,7 +168,8 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
           timer = 0.2f;
 
           animator.SetTrigger("pounce");
-          //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "pounce");
+
+          
         }
         break;
 
@@ -171,6 +179,11 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
           attackPhase = 3;
           timer = 0.5f;
           animator.SetTrigger("land");
+          if (control.photonView.isMine)
+          {
+            control.photonView.RPC("AnimTrigger", PhotonTargets.All, "land");
+
+          }
           //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "land");
         }
         break;
@@ -180,6 +193,11 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
         {
           attackPhase = 0;
           animator.SetTrigger("attackCooled");
+          if (control.photonView.isMine)
+          {
+            control.photonView.RPC("AnimTrigger", PhotonTargets.All, "attackCooled");
+
+          }
           //control.photonView.RPC("AnimTrigger", PhotonTargets.All, "attackCooled");
           control.GetComponent<Rigidbody2D>().drag = 16f;
         }
@@ -253,10 +271,14 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
 
   bool Turn(Quaternion newRot)
   {
-    animator.SetBool("walking", true);
+    
     if (Quaternion.Angle(control.transform.rotation, newRot) > 5)
     {
       transform.rotation = Quaternion.Lerp(control.transform.rotation, newRot, Time.deltaTime * 3);
+      if (Quaternion.Angle(control.transform.rotation, newRot) > 10)
+      {
+        animator.SetBool("walking", true);
+      }
       return false;
     }
     else
