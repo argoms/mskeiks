@@ -38,7 +38,7 @@ public class NetworkManager :Photon. MonoBehaviour
 
   void Update()
   {
-    Debug.Log(PhotonNetwork.GetPing());
+    //Debug.Log(PhotonNetwork.GetPing());
     //Debug.Log(PhotonNetwork.GetPing()); 
   }
 

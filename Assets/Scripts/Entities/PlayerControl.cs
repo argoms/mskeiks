@@ -53,6 +53,20 @@ public class PlayerControl : Photon.MonoBehaviour
 
   private Vector2 syncVelocity;
 
+  private string action;
+  private Vector3 walkTarget;
+  private bool walking;
+  /*
+  actions:
+    -walk
+   
+     
+  */
+
+  public struct actionInfo
+  {
+    public Vector3 targetPos;
+  }
   //test stuff
   public double m_InterpolationBackTime = 0.15; //0.15 = 150ms
   public double m_ExtrapolationLimit = 0.5;
@@ -67,6 +81,9 @@ public class PlayerControl : Photon.MonoBehaviour
   State[] m_BufferedState = new State[20];
   // Keep track of what slots are used
   int m_TimestampCount;
+
+  //no mroe test
+  
 
   void Start()
   {
@@ -92,6 +109,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void Update()
   {
+    //Debug.Log(PhotonNetwork.ServerTimestamp + "||" + PhotonNetwork.time);
     //Debug.Log(isAttacking);
     UpdateHUD();
 
@@ -104,24 +122,35 @@ public class PlayerControl : Photon.MonoBehaviour
 
       camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, zoomOut ? -120 : -6); //camera follows player default -12, -30 for more zoom
       InputMovement();
-      if (Input.GetMouseButtonDown(0) && attackCooldown < 0)
+      if (Input.GetMouseButtonDown(0))
       {
-        photonView.RPC("Attack", PhotonTargets.All);
-        PhotonNetwork.SendOutgoingCommands();
-        //Attack();
+        switch (action)
+        {
+          case "walk":
+            walkTarget = Input.mousePosition;
+            walkTarget.z = 6;
+            walkTarget = Camera.main.ScreenToWorldPoint(walkTarget);
+            walkTarget.z = 0;
+            Debug.Log("walking");
+            photonView.RPC("QueueAction", PhotonTargets.AllViaServer, PhotonNetwork.GetPing(), "walk", walkTarget);
+            PhotonNetwork.SendOutgoingCommands();
+            
+            break;
+        }
       }
       
       
     }
     else
     {
-      SyncedMovement();
+      InputMovement();
+      //SyncedMovement();
     }
   }
 
   void UpdateHUD()
   {
-    healthText.text = playManager.playerDisplayName + ": " + health;
+    healthText.text = playManager.playerDisplayName + ": " + health + "||" + walking;
   }
 
   void InputMovement()
@@ -130,28 +159,28 @@ public class PlayerControl : Photon.MonoBehaviour
     {
       zoomOut = !zoomOut;
     }
+    if (Input.GetKeyDown(KeyCode.W))
+    {
+      action = "walk";
+      Debug.Log("walkcrosshairtoggle");
+    }
+
+    if (walking)
+    {
+      movement = walkTarget - transform.position;
+      //Debug.Log((walkTarget - transform.position));
+      if ((walkTarget - transform.position).magnitude < 0.1)
+      {
+        walking = false;
+      }
+    }
+    else
+    {
+      movement = new Vector2(0, 0);
+    }
+    
     
 
-    movement = new Vector2(0,0);
-    if (Input.GetKey(KeyCode.W))
-    {
-      movement.y += 1;
-    }
-
-    if (Input.GetKey(KeyCode.S))
-    {
-      movement.y -= 1;
-    }
-
-    if (Input.GetKey(KeyCode.D))
-    {
-      movement.x += 1;
-    }
-
-    if (Input.GetKey(KeyCode.A))
-    {
-      movement.x -= 1;
-    }
     movement.Normalize();
     if (canMove)
     {
@@ -193,30 +222,45 @@ public class PlayerControl : Photon.MonoBehaviour
 
       lowerTorso.Rotate(lastRotation, 0, 0);
       upperTorso.Rotate(lastRotation * -1, 0, 0);
-      //leftLeg.Rotate(lastRotation, 0, 0);
-      //rightLeg.Rotate(lastRotation, 0, 0);
-      //leftLowerLeg.Rotate(lastRotation, 0, 0);
-      //rightLowerLeg.Rotate(lastRotation, 0, 0);
-      //lowerTorso.localRotation = Quaternion.LookRotation(lowerTorso.worldToLocalMatrix * movement, lowerTorso.right * -1);
-      //lowerTorso.rotation = Quaternion.LookRotation(lowerTorso.right * -1, lowerTorso.worldToLocalMatrix * movement);
-      //lowerTorso.rot//Rotate(0, 0, 90);
     }
     
   }
-  void OnMouseDown()
+
+  [PunRPC]
+  public void QueueAction(int senderPing, string action, Vector3 targetPos)
   {
+    double masterPing = PhotonNetwork.GetPing(); //DEBUG SINCE YOu'RE TESTING EVERYTHING ON ONE COMPUTER
+
+    double msDelay = 300 - senderPing - masterPing - PhotonNetwork.GetPing();
     if (photonView.isMine)
     {
-      photonView.RPC("Attack", PhotonTargets.All);
-      PhotonNetwork.SendOutgoingCommands();
+      msDelay += PhotonNetwork.GetPing();
+    }
+    double timeDelay = (msDelay * 0.001);
+
+
+    if (PhotonNetwork.isMasterClient && photonView.isMine)
+    {
+      //timeDelay += PhotonNetwork.GetPing() * 0.001;
+    }
+    Debug.Log(action + "||" + timeDelay + "||" + PhotonNetwork.GetPing());
+    StartCoroutine(BeginWalking(timeDelay));
+    switch (action)
+    {
+      case "walk":
+        walkTarget = targetPos;
+        
+        break;
     }
   }
 
-  [PunRPC]
-  void CutsceneEnded()
+  IEnumerator BeginWalking(double ping)
   {
-    canMove = true;
+    yield return new WaitForSeconds((float)ping);
+    walking = true;
+    //PhotonNetwork.Destroy(this.gameObject);
   }
+
 
   [PunRPC]
   public void Hit(int damage) //called when entity is hit by an attack
@@ -257,15 +301,15 @@ public class PlayerControl : Photon.MonoBehaviour
   }
   void SyncedMovement()
   {
-    /*
+    
     syncTime += Time.deltaTime;
     rigidbody.position = Vector2.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
     
     transform.rotation = rotationEnd;//Quaternion.Lerp(rotationStart, rotationEnd, syncTime / syncDelay); //rotation;
     
-    animator.SetBool("walking", (syncVelocity.magnitude > 0.1) );
-    */
-
+    animator.SetBool("walking", (walking) );
+    
+    /*
     //TEST
     // This is the target playback time of the rigid body
     double interpolationTime = PhotonNetwork.time - m_InterpolationBackTime;
@@ -323,13 +367,13 @@ public class PlayerControl : Photon.MonoBehaviour
         rigidbody.velocity = latest.velocity;
         animator.SetBool("walking", (latest.velocity.magnitude > 0.1));
       }
-    }
+    }*/
 
   }
 
   void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
   {
-    /*
+    
     if (stream.isWriting)
     {
       stream.SendNext(rigidbody.position);
@@ -370,9 +414,10 @@ public class PlayerControl : Photon.MonoBehaviour
       syncEndPosition = syncPosition + syncVelocity * syncDelay;
       syncStartPosition = rigidbody.position;
 
-    }*/
+    }
 
-
+    /*
+    //TEST
     // Send data to server
     if (stream.isWriting)
     {
@@ -422,7 +467,7 @@ public class PlayerControl : Photon.MonoBehaviour
         if (m_BufferedState[i].timestamp < m_BufferedState[i + 1].timestamp)
           Debug.Log("State inconsistent");
       }
-    }
+    }*/
   }
 
   //collisions with pickups/zones etc.:

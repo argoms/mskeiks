@@ -47,7 +47,7 @@ public class EnemyAI_SpiderWolf : Photon.MonoBehaviour {
     strafeDir = 1;
   }
 	
-	void Update ()
+	void UpdateA () //should be Update(), is UpdateA in order to kill all functionality
   {
     timer -= Time.deltaTime;
     skittering -= Time.deltaTime / 2;
