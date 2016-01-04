@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerControl : Photon.MonoBehaviour
 {
@@ -63,10 +64,6 @@ public class PlayerControl : Photon.MonoBehaviour
      
   */
 
-  public struct actionInfo
-  {
-    public Vector3 targetPos;
-  }
   //test stuff
   public double m_InterpolationBackTime = 0.15; //0.15 = 150ms
   public double m_ExtrapolationLimit = 0.5;
@@ -83,7 +80,12 @@ public class PlayerControl : Photon.MonoBehaviour
   int m_TimestampCount;
 
   //no mroe test
-  
+
+
+  public struct ActionInfo
+  {
+    public Vector3 targetPos;
+  }
 
   void Start()
   {
@@ -127,12 +129,15 @@ public class PlayerControl : Photon.MonoBehaviour
         switch (action)
         {
           case "walk":
-            walkTarget = Input.mousePosition;
-            walkTarget.z = 6;
-            walkTarget = Camera.main.ScreenToWorldPoint(walkTarget);
-            walkTarget.z = 0;
+            Vector3 walkTargeta = Input.mousePosition;
+            walkTargeta.z = 6;
+            walkTargeta = Camera.main.ScreenToWorldPoint(walkTargeta);
+            walkTargeta.z = 0;
             Debug.Log("walking");
-            photonView.RPC("QueueAction", PhotonTargets.AllViaServer, PhotonNetwork.GetPing(), "walk", walkTarget);
+
+            Hashtable actionInfo = new Hashtable();
+            actionInfo.Add("target", walkTargeta);
+            photonView.RPC("QueueAction", PhotonTargets.AllViaServer, PhotonNetwork.GetPing(), "walk", actionInfo);
             PhotonNetwork.SendOutgoingCommands();
             
             break;
@@ -227,7 +232,7 @@ public class PlayerControl : Photon.MonoBehaviour
   }
 
   [PunRPC]
-  public void QueueAction(int senderPing, string action, Vector3 targetPos)
+  public void QueueAction(int senderPing, string action,  Hashtable actionInfo)
   {
     double masterPing = PhotonNetwork.GetPing(); //DEBUG SINCE YOu'RE TESTING EVERYTHING ON ONE COMPUTER
 
@@ -244,20 +249,21 @@ public class PlayerControl : Photon.MonoBehaviour
       //timeDelay += PhotonNetwork.GetPing() * 0.001;
     }
     Debug.Log(action + "||" + timeDelay + "||" + PhotonNetwork.GetPing());
-    StartCoroutine(BeginWalking(timeDelay));
+    
     switch (action)
     {
       case "walk":
-        walkTarget = targetPos;
-        
+        StartCoroutine(BeginWalking(timeDelay, (Vector3)actionInfo["target"]));
         break;
     }
   }
 
-  IEnumerator BeginWalking(double ping)
+  IEnumerator BeginWalking(double ping, Vector3 target)
   {
     yield return new WaitForSeconds((float)ping);
+    Debug.Log("a");
     walking = true;
+    walkTarget = target;
     //PhotonNetwork.Destroy(this.gameObject);
   }
 
