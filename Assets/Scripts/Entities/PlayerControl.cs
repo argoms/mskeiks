@@ -124,6 +124,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
       camera.transform.position = GetComponent<Transform>().position + new Vector3(0, -2, zoomOut ? -120 : -6); //camera follows player default -12, -30 for more zoom
       InputMovement();
+      Hashtable actionInfo = new Hashtable();
       if (Input.GetMouseButtonDown(0))
       {
         switch (action)
@@ -135,11 +136,24 @@ public class PlayerControl : Photon.MonoBehaviour
             walkTargeta.z = 0;
             Debug.Log("walking");
 
-            Hashtable actionInfo = new Hashtable();
+            
             actionInfo.Add("target", walkTargeta);
             photonView.RPC("QueueAction", PhotonTargets.AllViaServer, PhotonNetwork.GetPing(), "walk", actionInfo);
             PhotonNetwork.SendOutgoingCommands();
             
+            break;
+
+          case "melee":
+            Vector3 dir = Input.mousePosition;
+            dir.z = 6;
+            dir = Camera.main.ScreenToWorldPoint(dir);
+            dir.z = 0;
+            dir = dir - transform.position;
+            Debug.Log("attacking");
+
+            actionInfo.Add("direction", dir);
+            
+            photonView.RPC("QueueAction", PhotonTargets.AllViaServer, PhotonNetwork.GetPing(), "melee", actionInfo);
             break;
         }
       }
@@ -155,7 +169,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void UpdateHUD()
   {
-    healthText.text = playManager.playerDisplayName + ": " + health + "||" + walking;
+    healthText.text = playManager.playerDisplayName + ": " + health;
   }
 
   void InputMovement()
@@ -169,11 +183,17 @@ public class PlayerControl : Photon.MonoBehaviour
       action = "walk";
       Debug.Log("walkcrosshairtoggle");
     }
+    else if (Input.GetKeyDown(KeyCode.Alpha1))
+    {
+      action = "melee";
+      Debug.Log("meleecrosshairtoggle");
+    }
 
     if (walking)
     {
       movement = walkTarget - transform.position;
       //Debug.Log((walkTarget - transform.position));
+      transform.rotation = Quaternion.LookRotation(Vector3.forward, movement);
       if ((walkTarget - transform.position).magnitude < 0.1)
       {
         walking = false;
@@ -197,7 +217,7 @@ public class PlayerControl : Photon.MonoBehaviour
       Vector3 mousePos = Input.mousePosition;
       mousePos.z = 12;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-      transform.rotation = Quaternion.LookRotation(Vector3.forward, (mousePos - transform.position) + Vector3.down * 2);
+      //transform.rotation = Quaternion.LookRotation(Vector3.forward, (mousePos - transform.position) + Vector3.down * 2);
 
       //Debug.Log(upperTorso);
       if (movement == Vector2.zero)
@@ -218,7 +238,7 @@ public class PlayerControl : Photon.MonoBehaviour
     
   }
 
-  void LateUpdate()
+/*  void LateUpdate()
   {
     if (movement != Vector2.zero)
     {
@@ -229,33 +249,53 @@ public class PlayerControl : Photon.MonoBehaviour
       upperTorso.Rotate(lastRotation * -1, 0, 0);
     }
     
-  }
+  }*/
 
   [PunRPC]
   public void QueueAction(int senderPing, string action,  Hashtable actionInfo)
   {
-    double masterPing = PhotonNetwork.GetPing(); //DEBUG SINCE YOu'RE TESTING EVERYTHING ON ONE COMPUTER
+    double masterPing = PhotonNetwork.GetPing(); //DEBUG SINCE YOu'RE TESTING EVERYTHING ON ONE COMPUTER REMEMBER TO ACTUALLY QUERY PING ONCE DEPLOYED
 
     double msDelay = 300 - senderPing - masterPing - PhotonNetwork.GetPing();
     if (photonView.isMine)
     {
       msDelay += PhotonNetwork.GetPing();
     }
-    double timeDelay = (msDelay * 0.001);
 
-
-    if (PhotonNetwork.isMasterClient && photonView.isMine)
+    //debug check, not sure if best way to do this atm
+    if (msDelay > 0)
     {
-      //timeDelay += PhotonNetwork.GetPing() * 0.001;
+      Debug.Log("action sent");
     }
-    Debug.Log(action + "||" + timeDelay + "||" + PhotonNetwork.GetPing());
-    
+    else
+    {
+      Debug.Log("action send error");
+      return;
+    }
+
+    double timeDelay = (msDelay * 0.001);
+    Debug.Log(action + "||" + timeDelay + "||" + "|a|" + msDelay + "|" + PhotonNetwork.GetPing());
+
+
     switch (action)
     {
       case "walk":
         StartCoroutine(BeginWalking(timeDelay, (Vector3)actionInfo["target"]));
         break;
+
+      case "melee":
+        StartCoroutine(BeginMelee(timeDelay, (Vector3)actionInfo["direction"]));
+        break;
     }
+  }
+
+  IEnumerator BeginMelee(double ping, Vector3 direction)
+  {
+    yield return new WaitForSeconds((float)ping);
+    Debug.Log("a");
+    transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
+    Attack();
+
   }
 
   IEnumerator BeginWalking(double ping, Vector3 target)
@@ -282,18 +322,15 @@ public class PlayerControl : Photon.MonoBehaviour
       }
     }
   }
-
-  [PunRPC]
+  
   void Attack()
   {
     //animation code goes here
     animator.Play("Attack1_1");
 
     //step:
-    if (photonView.isMine)
-    {
-      DelayedStep(0, 250);
-    }
+    DelayedStep(0, 250);
+
     //create tracer:
     GameObject tracer = (GameObject)Instantiate(Resources.Load("AttackTracer"), transform.position + (transform.rotation * Vector3.up * 0.5f), transform.rotation);
     tracer.transform.parent = transform;
