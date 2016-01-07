@@ -70,7 +70,11 @@ public class MapGeneration : Photon.MonoBehaviour
             HubGen();
             break;
           case 1:
-            ForestMapGen();
+            //ForestMapGen();
+            ArenaMapGen();
+            break;
+          case 2:
+            ArenaMapGen();
             break;
         }
         loadState = 5;
@@ -182,6 +186,22 @@ public class MapGeneration : Photon.MonoBehaviour
     }*/
   }
 
+  void ArenaMapGen()
+  {
+    MapRoom startingMapRoom = CreateStartMapRoom(15, "StartMapRoom");
+    startingMapRoom.roomNumber = 1;
+    DrawMapRoom(startingMapRoom, Vec2(mapWidth / 2 - 7, 16));
+    SetTileAt(Vec2(60, 23), Tile(5, 0, 0));
+    SetTileAt(Vec2(70, 23), Tile(5, 0, 1));
+
+    /*
+    int i = 0;
+    while (i++ < 5)
+    {
+      DrawNextMapRoom(mapLength - 1);
+    }*/
+  }
+
   MapRoom CreateSquareMapRoom(int size, string type)
   {
     MapRoom newMapRoom = new MapRoom();
@@ -273,6 +293,7 @@ public class MapGeneration : Photon.MonoBehaviour
         SetTileAt(location + (newMapRoom.size / 2), Tile(-1, -2, 0)); 
 
         break;
+
       default:
         FillBorders(location, newMapRoom.size, Tile(1, 0, 0), false, true, newMapRoom.roomNumber); //starting room's special meta value is 1 because fuck starting at zero right?
         break;
@@ -439,14 +460,18 @@ public class MapGeneration : Photon.MonoBehaviour
             }
             break;
 
-          case -2:
+          case -2: //player spawn position
             GameObject newPlayer = PhotonNetwork.Instantiate("Player", new Vector3((i + startingPoint.x), (j + startingPoint.y), 0), Quaternion.identity, 0);
             break;
-          case 3: //debug fallthroguh
+          case 3: //meant to be door
             tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/BasicTile2"), 2);
             break;
-          case 4:
+          case 4: //transition zone
             tile = SpawnObjectAtPosition(Vec2(i + startingPoint.x, j + startingPoint.y), Resources.Load("GameLevel/TransitionZone"), 0);
+            break;
+
+          case 5: //player spawn zone (for arena)
+            this.GetComponent<LevelManager>().AddSpawnPoint(new Vector3(i + startingPoint.x, j + startingPoint.y, 0));  // Add(new Vector3(i + startingPoint.x, j + startingPoint.y, 0));
             break;
             /*
             case 0:

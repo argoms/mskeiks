@@ -57,13 +57,16 @@ public class PlayerControl : Photon.MonoBehaviour
   private string action;
   private Vector3 walkTarget;
   private bool walking;
+
+  public int team;
   /*
   actions:
     -walk
    
      
   */
-
+  
+    /*
   //test stuff
   public double m_InterpolationBackTime = 0.15; //0.15 = 150ms
   public double m_ExtrapolationLimit = 0.5;
@@ -78,7 +81,7 @@ public class PlayerControl : Photon.MonoBehaviour
   State[] m_BufferedState = new State[20];
   // Keep track of what slots are used
   int m_TimestampCount;
-
+  */
   //no mroe test
 
 
@@ -169,7 +172,7 @@ public class PlayerControl : Photon.MonoBehaviour
 
   void UpdateHUD()
   {
-    healthText.text = playManager.playerDisplayName + ": " + health;
+    healthText.text = playManager.playerDisplayName + ": " + health + "|" + team;
   }
 
   void InputMovement()
